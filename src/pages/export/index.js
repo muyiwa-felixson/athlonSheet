@@ -43,12 +43,12 @@ const ExportInvoice = props => {
         pdf.save('print.pdf');
       };
     
-    const items = [{ key: '1', label: (<a onClick={handleDownloadPdf}>Download PDF</a>) }, { key: '2', label: (<DownloadTableExcel
+    const items = [{ key: '1', label: (<span onClick={handleDownloadPdf}>Download PDF</span>) }, { key: '2', label: (<DownloadTableExcel
         filename={`Athlon Sheet: ${UserData.invoice.get.customer.name}_${UserData.invoice.get.project.name}`}
         sheet="Invoice"
         currentTableRef={dataTable.current}
     >
-       <a> Download Excel </a></DownloadTableExcel>) }];
+       <span> Download Excel </span></DownloadTableExcel>) }];
     return <>
         <div style={{ display: 'none' }} ><SprintTable /></div>
         <SheetHeader>
@@ -56,7 +56,7 @@ const ExportInvoice = props => {
                 <Box></Box>
                 <Box pad={['x2', 'x0']}>
                     <Space>
-                        <Dropdown menu={{ items }}><a onClick={(e) => e.preventDefault()}><Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiDownload />}>Download</Button></a></Dropdown>
+                        <Dropdown menu={{ items }}><span onClick={(e) => e.preventDefault()}><Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiDownload />}>Download</Button></span></Dropdown>
                         <ReactToPrint
         trigger={() => <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiPrinter />}>Print</Button>}
         content={() => printable.current}

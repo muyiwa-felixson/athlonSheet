@@ -10,7 +10,7 @@ export const UpdateMembers = (props) => {
   const UserData = useContext(UserContext);
   // console.log(excludedMembers);
 
-  const { element, index, closeModal } = props;
+  const { element, closeModal } = props;
   const [sprint, setSprint] = useState({ ...element });
   const [members, setMembers] = useState(UserData.excluded.get[`sprint_${sprint.sprint}`] ? UserData.excluded.get[`sprint_${sprint.sprint}`] : null);
   const [form] = Form.useForm();

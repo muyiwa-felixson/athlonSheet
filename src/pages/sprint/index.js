@@ -39,7 +39,6 @@ const SprintSheet = () => {
 
   project.sprints > 0 &&
     spreadSprint().forEach((e, i) => {
-      let inv = 0;
       e.billStart &&
         items.push({
           children: <><Tag color="green">{dayjs(e.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</Tag></>,

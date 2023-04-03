@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import Theme from "../utility/theme";
 import Autosuggest from 'react-autosuggest';
 import { FiSearch, FiPlusSquare } from "react-icons/fi";
-import { bubbleColor, generateColorFromLetters } from "../utility/util";
+import { generateColorFromLetters } from "../utility/util";
 import { transparentize } from "polished";
 
 const SeachInputWrapper = styled.div`

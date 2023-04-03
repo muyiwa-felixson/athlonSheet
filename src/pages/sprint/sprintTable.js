@@ -15,7 +15,7 @@ const SprintTable = () => {
     const [editState, setEditState] = useState(null);
 
     const popModal = (index, element) => {
-        setEditState({ index: index, element: element })
+        setEditState({ element: element })
         setModal(true);
     }
     const closeModal = () => {
@@ -39,7 +39,6 @@ const SprintTable = () => {
         let sprintGroup = [];
         let sprintItems = [];
         let g = 0;
-        let total = 0;
         let groupTotal = 0;
         let projectTotal = 0;
         let projectCost = 0;
@@ -59,7 +58,7 @@ const SprintTable = () => {
             const research = extracost.research;
             const researchCost = extracost.research === 'sprint' ? extracost.researchCost : 0;
             const researchDiscount = extracost.researchDiscount;
-            const insurance = extracost.insurance;
+            // const insurance = extracost.insurance;
 
             const sprintDiscount = discount && i + 1 >= discountAt ? discountValue : 0;
             let sprintCost = 0;
@@ -129,7 +128,6 @@ const SprintTable = () => {
             if (g === billrate || i === sprints - 1) {
                 g = 0;
                 if (billcycle === 'start') {
-                    const nextFriday = (5 - dayjs(sprintDate, 'DD/MM/YYYY').day() + 7) % 7;
                     sprintItems.unshift({ type: 'invoice', cost: groupCost, total: groupTotal, date: startDate, travel: groupTravel, research: groupResearch, discount: (groupCost + groupTravel + groupResearch) - groupTotal });
                 } else {
                     const nextFriday = (5 - dayjs(sprintDate, 'DD/MM/YYYY').day() + 7) % 7;
@@ -137,7 +135,6 @@ const SprintTable = () => {
                 }
                 sprintGroup.push(sprintItems);
                 sprintItems = [];
-                total = 0;
                 groupTotal = 0;
                 sprintCost = 0;
                 groupCost = 0;

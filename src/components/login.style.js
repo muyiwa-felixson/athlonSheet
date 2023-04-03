@@ -111,7 +111,7 @@ export const GoogleButton = styled.button`
 export const GoogleProfile = ({picture, name, email, logOut}) => {
     const [drop, setDrop] = useState(false);
     return <ProfileWrapper onClick={()=> setDrop(!drop)} show={drop}>
-        <img src={picture} alt="user image" />
+        <img src={picture} alt="user profile" />
         <div>
             <strong>{name}</strong>
 <span>{email}</span>
