@@ -1,38 +1,43 @@
-.App {
-  text-align: center;
+body{
+  font-size: 15px;
+  font-family: "NoiGrotesk", sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+*{
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+h1,h2,h3{
+  font-family: "PPFormula", sans-serif;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+h2{
+  font-size: 36px;
+  line-height: 130%;
+  color: black;
+}
+h3{
+  font-size: 24px;
+  line-height: 130%;
+  color: black;
 }
 
-.App-link {
-  color: #61dafb;
+h4{
+  font-size: 20px;
+  line-height: 130%;
+  margin: 0;
+  color: black;
+  font-weight: 600;
+  letter-spacing: -0.05rem;
+}
+strong{
+  font-weight: 600;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@media print{
+
+   .athlonSheet{
+    font-size: 0.6rem;
+   }
+
 }

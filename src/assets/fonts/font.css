@@ -1,0 +1,54 @@
+@font-face {
+    font-family: "NoiGrotesk";
+    src: url("./NoiGrotesk-Black.woff2") format("woff2"),
+         url("./NoiGrotesk-Black.woff") format("woff"),
+         url("./NoiGrotesk-Black.ttf") format("truetype");
+    font-weight: 800;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: "NoiGrotesk";
+    src: url("./NoiGrotesk-Regular.woff2") format("woff2"),
+         url("./NoiGrotesk-Regular.woff") format("woff"),
+         url("./NoiGrotesk-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: "NoiGrotesk";
+    src: url("./NoiGrotesk-Semibold.woff2") format("woff2"),
+         url("./NoiGrotesk-Semibold.woff") format("woff"),
+         url("./NoiGrotesk-Semibold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: "NoiGrotesk";
+    src: url("./NoiGrotesk-Light.woff2") format("woff2"),
+         url("./NoiGrotesk-Light.woff") format("woff"),
+         url("./NoiGrotesk-Light.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: "NoiGrotesk";
+    src: url("./NoiGrotesk-Thin.woff2") format("woff2"),
+         url("./NoiGrotesk-Thin.woff") format("woff"),
+         url("./NoiGrotesk-Thin.ttf") format("truetype");
+    font-weight: 100;
+    font-style: normal;
+  }
+
+
+  @font-face {
+    font-family: "PPFormula";
+    src: url("./PPFormula-CondensedBlack.woff2") format("woff2"),
+         url("./PPFormula-CondensedBlack.woff") format("woff"),
+         url("./PPFormula-CondensedBlack.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+  }
