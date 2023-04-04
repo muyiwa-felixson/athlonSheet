@@ -5,6 +5,7 @@ import { Box } from '../../components/layout.style';
 import { TimeZone } from '../../components/caterpillar.style';
 import { Header } from '../../components/header.style';
 import dayjs from 'dayjs';
+import { sprintDuration } from '../../utility/util';
 
 const SprintSheet = () => {
   const { invoice } = useContext(UserContext);
@@ -26,7 +27,7 @@ const SprintSheet = () => {
         sprint: i + 1,
         billEnd: billcycle === 'end' && (i % billrate === billrate - 1 || i + 1 === sprints),
         billStart: billcycle === 'start' && i % billrate === 0,
-        date: dayjs(sprintDate, 'DD/MM/YYYY').add(14 * i, 'day').format('DD/MM/YYYY'),
+        date: dayjs(sprintDate, 'DD/MM/YYYY').add(sprintDuration * i, 'day').format('DD/MM/YYYY'),
         cost: sprintCost,
         members: sprintMembers,
         discount: discount && i + 1 >= discountAt ? discountValue : 0
@@ -36,12 +37,12 @@ const SprintSheet = () => {
   };
 
   let items = [];
-
+  const nextFriday = (5 - dayjs(project.date, 'DD/MM/YYYY').day() + 3) % 7;
   project.sprints > 0 &&
     spreadSprint().forEach((e, i) => {
       e.billStart &&
         items.push({
-          children: <><Tag color="green">{dayjs(e.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</Tag></>,
+          children: <><Tag color="green">{dayjs(e.date, 'DD/MM/YYYY').format('ddd MMM D, YYYY')}</Tag></>,
           color: 'green',
           position: 'right'
         });
@@ -52,14 +53,14 @@ const SprintSheet = () => {
             <strong>
               Sprint {e.sprint} {e.discount > 0 && <Tag color="red">{e.discount}%</Tag>}
             </strong>
-            <span className="date">{dayjs(e.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</span>
+            <span className="date">{dayjs(e.date, 'DD/MM/YYYY').format('ddd MMM D, YYYY')}</span>
           </TimeZone>
         ),
         position: 'left'
       });
       e.billEnd &&
         items.push({
-          children: <Tag color="green">{dayjs(e.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</Tag>,
+          children: <Tag color="green">{dayjs(e.date, 'DD/MM/YYYY').add(sprintDuration - 3, 'day').add(nextFriday, 'day').format('ddd MMM D, YYYY')}</Tag>,
           color: 'green',
           position: 'right'
         });

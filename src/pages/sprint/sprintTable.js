@@ -130,8 +130,8 @@ const SprintTable = () => {
                 if (billcycle === 'start') {
                     sprintItems.unshift({ type: 'invoice', cost: groupCost, total: groupTotal, date: startDate, travel: groupTravel, research: groupResearch, discount: (groupCost + groupTravel + groupResearch) - groupTotal });
                 } else {
-                    const nextFriday = (5 - dayjs(sprintDate, 'DD/MM/YYYY').day() + 7) % 7;
-                    sprintItems.push({ type: 'invoice', cost: groupCost, total: groupTotal, date: dayjs(sprintDate, 'DD/MM/YYYY').add(sprintDuration, 'day').add(nextFriday, 'day').format('DD/MM/YYYY'), travel: groupTravel, research: groupResearch, discount: (groupCost + groupTravel + groupResearch) - groupTotal });
+                    const nextFriday = (5 - dayjs(sprintDate, 'DD/MM/YYYY').day() + 3) % 7;
+                    sprintItems.push({ type: 'invoice', cost: groupCost, total: groupTotal, date: dayjs(sprintDate, 'DD/MM/YYYY').add(sprintDuration - 3, 'day').add(nextFriday, 'day').format('DD/MM/YYYY'), travel: groupTravel, research: groupResearch, discount: (groupCost + groupTravel + groupResearch) - groupTotal });
                 }
                 sprintGroup.push(sprintItems);
                 sprintItems = [];
