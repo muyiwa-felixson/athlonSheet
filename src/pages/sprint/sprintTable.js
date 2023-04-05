@@ -7,7 +7,7 @@ import { Avatar, Table, Tag, Modal } from 'antd';
 import { getFirstTwoLetters } from '../../components/input.style';
 import { UpdateMembers } from './update.members';
 import Theme from '../../utility/theme';
-import { sprintDuration } from '../../utility/util';
+import { generateColorFromLetters, sprintDuration } from '../../utility/util';
 
 const SprintTable = () => {
     const { invoice, data, sheet, excluded } = useContext(UserContext);
@@ -204,7 +204,7 @@ const SprintTable = () => {
                                     {
                                         title: "Members",
                                         dataIndex: 'members',
-                                        render: (v, row, i) => <div onDoubleClick={() => popModal(i, row)}>{row.members.map((elem, ind) => <Avatar style={{ margin: '2px', fontSize: '12px', backgroundColor: excluded.get[`sprint_${row.sprint}`] && excluded.get[`sprint_${row.sprint}`][ind] && !excluded.get[`sprint_${row.sprint}`][ind].active ? '#ddd' : 'blue' }} size={20} key={`member_${row.sprint}_${ind}`}>{getFirstTwoLetters(elem.role)}</Avatar>)}</div>,
+                                        render: (v, row, i) => <div onDoubleClick={() => popModal(i, row)}>{row.members.map((elem, ind) => <Avatar style={{ margin: '2px', fontSize: '12px', backgroundColor: excluded.get[`sprint_${row.sprint}`] && excluded.get[`sprint_${row.sprint}`][ind] && !excluded.get[`sprint_${row.sprint}`][ind].active ? '#ddd' : generateColorFromLetters(getFirstTwoLetters(elem.role)) }} size={20} key={`member_${row.sprint}_${ind}`}>{getFirstTwoLetters(elem.role)}</Avatar>)}</div>,
                                     },
                                     {
                                         title: "Travel",
