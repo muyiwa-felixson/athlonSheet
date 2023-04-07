@@ -1,29 +1,15 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { UserContext } from '../../App';
-import { Box } from '../../components/layout.style';
 import dayjs from 'dayjs';
-import { BillBox, BillCard, GroupCard } from '../../components/invoiceCards.style';
-import { Avatar, Table, Tag, Modal } from 'antd';
-import { getFirstTwoLetters } from '../../components/input.style';
-import { UpdateMembers } from './update.members';
-import Theme from '../../utility/theme';
-import { generateColorFromLetters, sprintDuration } from '../../utility/util';
+import {  sprintDuration } from '../../utility/util';
 
 const SprintTable = () => {
     const { invoice, data, sheet, excluded } = useContext(UserContext);
-    const [modal, setModal] = useState(false);
-    const [editState, setEditState] = useState(null);
+    const loading = invoice?.get.loading;
 
-    const popModal = (index, element) => {
-        setEditState({ element: element })
-        setModal(true);
+    const getGroup = (sprint) => {
+        return loading.find(group => group.to >= sprint) || null;
     }
-    const closeModal = () => {
-        setEditState(null)
-        setModal(false);
-        spreadSprint();
-    }
-
 
     const project = invoice.get.project || {};
     const extracost = invoice.get.extracost || {};
@@ -60,6 +46,8 @@ const SprintTable = () => {
             const researchDiscount = extracost.researchDiscount;
             // const insurance = extracost.insurance;
 
+            console.log("Sprint: ",i+1, getGroup(i+1));
+
             const sprintDiscount = discount && i + 1 >= discountAt ? discountValue : 0;
             let sprintCost = 0;
             let personnelCost = 0;
@@ -68,13 +56,17 @@ const SprintTable = () => {
             // get single sprint cost based on members
 
             const sprintMembers = invoice.get.members || [];
-            sprintMembers.forEach((member, inc) => {
-                if (excluded.get[`sprint_${i + 1}`] && excluded.get[`sprint_${i + 1}`][inc] && !excluded.get[`sprint_${i + 1}`][inc].active) {
-                    personnelCost += 0;
-                } else {
-                    personnelCost += parseInt(getMemberCost(member.role) || 0);
-                }
-            });
+            // sprintMembers.forEach((member, inc) => {
+            //     if (excluded.get[`sprint_${i + 1}`] && excluded.get[`sprint_${i + 1}`][inc] && !excluded.get[`sprint_${i + 1}`][inc].active) {
+            //         personnelCost += 0;
+            //     } else {
+            //         personnelCost += parseInt(getMemberCost(member.role) || 0);
+            //     }
+            // });
+            getGroup(i+1)?.members.map((mem, inc)=> {
+                console.log('sprint ', i+1, 'member: ', mem.role, 'cost: ',parseInt(getMemberCost(mem.role) *  mem.commitment || 0))
+                personnelCost += parseInt(getMemberCost(mem.role) *  mem.commitment || 0);
+            })
             // COST AGGREGATION
             sprintCost = sprintCost + personnelCost;
             // if travel cost applies before discount
@@ -120,7 +112,7 @@ const SprintTable = () => {
                 personnel: personnelCost,
                 travel: travelCost,
                 research: researchCost,
-                members: sprintMembers.map((member) => ({ name: member.name, role: member.role, cost: getMemberCost(member.role) })),
+                members: getGroup(i+1)?.members.map((member) => ({ name: member.name, role: member.role, commitment: member.commitment, cost: parseInt(getMemberCost(member.role) *  member.commitment || 0) })),
                 discount: sprintDiscount,
                 discountValue: sprintDiscounted
             });
@@ -146,98 +138,11 @@ const SprintTable = () => {
         sheet.set(sprintGroup);
     };
     useEffect(() => {
-        // console.log("invoice changed");
         spreadSprint();
     }, [invoice.get]);
     return (
         <>
-            <Box pad={['x4', 'x4']}>
-                {
-
-                    sheet.get.length > 0 && sheet.get?.map((el, i) => {
-                        const bill = el.find(e => e.type === 'invoice');
-                        return <GroupCard key={`sprinttable_${i}`}>
-                            <BillCard>
-                                <BillBox>
-                                    <Tag color="green">Invoice Date</Tag>
-                                    <div><strong>{bill.date}</strong></div>
-                                </BillBox>
-                                <BillBox>
-                                    <Tag color="volcano">Cost</Tag>
-                                    <div><strong>{bill.cost}</strong></div>
-                                </BillBox>
-                                <BillBox>
-                                    <Tag color="red">Travel</Tag>
-                                    <div><strong>{bill.travel}</strong></div>
-                                </BillBox>
-                                <BillBox>
-                                    <Tag color="red">Research</Tag>
-                                    <div><strong>{bill.research}</strong></div>
-                                </BillBox>
-                                <BillBox>
-                                    <Tag color="red">Discount</Tag>
-                                    <div><strong>-{bill.discount}</strong></div>
-                                </BillBox>
-                                <BillBox>
-                                    <Tag color="blue">Total</Tag>
-                                    <div><strong>${bill.total}</strong></div>
-                                </BillBox>
-                            </BillCard>
-                            <Table
-                                rowKey={(e) => `table_${e.sprint}_sprintTable`}
-                                columns={[
-                                    {
-                                        title: "Date",
-                                        dataIndex: 'date',
-                                        render: (v, row) => <span>{v}</span>
-                                    },
-                                    {
-                                        title: "Sprint",
-                                        dataIndex: 'sprint',
-                                        render: (v, row) => <strong>Sprint {v}</strong>
-                                    },
-                                    {
-                                        title: "Personnel Cost",
-                                        dataIndex: 'personnel',
-                                        render: (v, row) => <span>${v}</span>
-                                    },
-                                    {
-                                        title: "Members",
-                                        dataIndex: 'members',
-                                        render: (v, row, i) => <div onDoubleClick={() => popModal(i, row)}>{row.members.map((elem, ind) => <Avatar style={{ margin: '2px', fontSize: '12px', backgroundColor: excluded.get[`sprint_${row.sprint}`] && excluded.get[`sprint_${row.sprint}`][ind] && !excluded.get[`sprint_${row.sprint}`][ind].active ? '#ddd' : generateColorFromLetters(getFirstTwoLetters(elem.role)) }} size={20} key={`member_${row.sprint}_${ind}`}>{getFirstTwoLetters(elem.role)}</Avatar>)}</div>,
-                                    },
-                                    {
-                                        title: "Travel",
-                                        dataIndex: 'travel'
-                                    },
-                                    {
-                                        title: "Research",
-                                        dataIndex: 'research'
-                                    },
-                                    {
-                                        title: "Discount %",
-                                        dataIndex: 'discount',
-                                        render: (v, row) => <span>{v}%</span>
-                                    },
-                                    {
-                                        title: "Discount",
-                                        dataIndex: 'discount',
-                                        render: (v, row) => <span>{row.discountValue && `-${row.discountValue}`}</span>
-                                    },
-                                    {
-                                        title: "Total",
-                                        render: (row) => <strong>{row.cost}</strong>
-                                    }
-                                ]}
-                                dataSource={el.filter(e => e.type === 'sprint')}
-                                size="small" bordered pagination={false} shouldCellUpdate />
-                        </GroupCard>
-                    })
-                }
-            </Box>
-            <Modal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={400}>
-                {modal && <UpdateMembers {...editState} closeModal={closeModal} />}
-            </Modal>
+        Sheet Spread run
         </>
     );
 };

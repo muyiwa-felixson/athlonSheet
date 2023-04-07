@@ -2,7 +2,7 @@ import { Box } from "../../components/layout.style";
 import { UserContext } from '../../App';
 import { Table, Radio, Modal } from 'antd';
 import { useState, useContext, useEffect } from "react";
-import { UpdateRate } from "../rates/update.rate";
+import { UpdateRate } from "./update.rate";
 import Theme from "../../utility/theme";
 import { TableInput } from "../../components/input.style";
 
@@ -60,7 +60,8 @@ useEffect(() => {
     setBusinessType(UserData.invoice.get.customer?.type)
 }, [UserData.invoice]);
 
-    return <Box pad={['x2', 'x5']}>
+    return <>
+    <Box pad={['x2', 'x5']}>
         {/* <h4>Rate Card</h4>
         <Box pad={['x1']} /> */}
         <Box pad={['x0', 'x0', 'x3']}>
@@ -76,6 +77,7 @@ useEffect(() => {
             { modal && <UpdateRate {...editState} closeModal={closeRate} /> }
        </Modal>
     </Box>
+    </>
 }
 
 export default RateTab;
