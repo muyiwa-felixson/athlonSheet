@@ -71,4 +71,9 @@ export const billCycleTypes = [
 ];
 
 export const sprintDuration = 14;
+export const sprintWorkDuration = 10;
 export const dateFormat = 'DD/MM/YYYY';
+
+export const range = (start, end) => {
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}

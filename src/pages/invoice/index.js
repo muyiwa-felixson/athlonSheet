@@ -4,7 +4,7 @@ import { UserContext } from '../../App';
 import MembersTab from './members.tab';
 import { FiPackage, FiCreditCard, FiUsers, FiPercent, FiList } from 'react-icons/fi';
 import { TabItem } from '../../components/tab.style';
-import RateTab from './ratecard.tab';
+import RateTab from '../rates/ratecard';
 import Customer from './customer';
 import ProjectTab from './project.tab';
 import DiscountTab from './discount.tab';
@@ -22,7 +22,7 @@ const Invoice = () => {
         {
           key: '2',
           disabled: !(typeof UserData.invoice.get.customer === 'object'),
-          label: <TabItem><FiUsers /> Members</TabItem>,
+          label: <TabItem><FiUsers /> Members & Sprint Loading</TabItem>,
           children: <MembersTab />,
         },
         {
@@ -35,13 +35,7 @@ const Invoice = () => {
           key: '4',
           label: <TabItem><FiCreditCard /> Rate Card</TabItem>,
           children: <RateTab />,
-        },
-        {
-          key: '5',
-          disabled: !(typeof UserData.invoice.get.extracost === 'object'),
-          label: <TabItem><FiList /> Modify Sprints</TabItem>,
-          children: <SprintTable />
-        },
+        }
       ];
       // console.log("Excluded", UserData.invoice.get.excluded);
 
