@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import Theme from "../utility/theme";
-import { transparentize } from "polished";
+import { darken, transparentize } from "polished";
 
 
 export const Box = styled.div`
@@ -59,3 +59,12 @@ export const Grid = styled.div`
         }
     `}
 `;
+
+export const Warning = styled.div`
+    padding: ${Theme.dimensions.x2};
+    border-radius: ${Theme.primary.radius};
+    border: 1px solid ${ transparentize(0.6,Theme.primary.colors.google)};
+    background-color: ${ transparentize(0.9,Theme.primary.colors.google)};
+    color: ${darken(0.1, Theme.primary.colors.google)};
+    max-width: 1000px;
+`

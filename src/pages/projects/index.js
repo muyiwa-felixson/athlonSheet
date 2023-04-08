@@ -17,7 +17,7 @@ export const ManageProject = () => {
         billrate: 2,
         billcycle: 'start'
     });
-
+    
     const changeValue = (e, vari) => {
         let newProject = { ...project };
         newProject[vari] = e.target.value;

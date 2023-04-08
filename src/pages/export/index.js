@@ -134,7 +134,7 @@ const ExportInvoice = props => {
                             </tr> : <tr key={`sheet_${elem.type}_${index}`}>
                                 <td>{elem.date}</td>
                                 <td>Sprint {elem.sprint}</td>
-                                <td>{elem.members.length - elem.members.filter((e, i) => excluded.get[`sprint_${elem.sprint}`] && excluded.get[`sprint_${elem.sprint}`][i] && !excluded.get[`sprint_${elem.sprint}`][i].active).length}</td>
+                                <td>{elem.members?.length - elem.members?.filter((e, i) => excluded.get[`sprint_${elem.sprint}`] && excluded.get[`sprint_${elem.sprint}`][i] && !excluded.get[`sprint_${elem.sprint}`][i].active).length}</td>
                                 <td className="alignR">{elem.personnel}</td>
                                 <td className="alignR">{elem.travel}</td>
                                 <td className="alignR">{elem.research}</td>

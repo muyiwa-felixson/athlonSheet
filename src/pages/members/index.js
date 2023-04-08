@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserContext } from '../../App';
-import { Button, Select } from 'antd';
+import { Button, Empty, Select } from 'antd';
 import Cookies from "js-cookie";
 import { RowGroup, SprintGroup } from '../../components/sprintLoad.style';
 import { range, sprintWorkDuration } from '../../utility/util';
@@ -8,6 +8,7 @@ import { Table } from '../../components/table.style';
 import { Bubble } from '../../components/input.style';
 import { FiTrash } from 'react-icons/fi';
 import Theme from '../../utility/theme';
+import { Box, Warning } from '../../components/layout.style';
 
 export const ManageMembers = () => {
   const UserData = React.useContext(UserContext);
@@ -52,33 +53,20 @@ export const ManageMembers = () => {
     let newGroups = [...groups];
     newGroups.splice(groupIndex, 1);
     setGroups(newGroups);
-    runCheck();
   };
 
   const updateGroupto = (groupIndex, toValue) => {
     let newGroups = [...groups];
     newGroups[groupIndex].to = toValue;
     setGroups(newGroups);
-    runCheck();
   }
 
   const addMember = (groupIndex, member) => {
     let newGroups = [...groups];
     newGroups[groupIndex].members.push(member);
     setGroups(newGroups);
-    runCheck();
   };
 
-  const runCheck = () => {
-    let newGroups = [...groups];
-    // newGroups = newGroups.map((e, i) => {
-    //   const prev = i > 0 ? newGroups[i-1].to : 0;
-    //   return {...e, members: e.members.map(em=>{
-    //     return {...em, commitment: em.commitment  > (e.to - prev) * 10 || !em.commitment ? (e.to - prev) * 10 : em.commitment }
-    //   })}
-    // })
-    setGroups(newGroups);
-  }
 
   useEffect(() => {
     const newInvoice = { ...UserData.invoice.get, loading: groups };
@@ -96,9 +84,10 @@ export const ManageMembers = () => {
             <strong>Load {groupIndex + 1}</strong>
           </div>
           <div>
-            <em className='sub'>Sprint {previousTo} - {group.to}, {sprintDays} days</em>
+            <em className='sub'>(Sprint {previousTo + 1 === group.to ?  group.to : `${previousTo+1} - ${group.to}`}, {sprintDays} days)</em>
           </div>
           <div>
+<span style={{ display: 'inline-block', marginRight: Theme.dimensions.x2, fontWeight: 600}}>Up to</span>
             <Select
               defaultValue={1}
               value={group.to}
@@ -115,64 +104,73 @@ export const ManageMembers = () => {
           </Button>
           <Button className='memberDelete' onClick={() => { deleteGroup(groupIndex) }} icon={<FiTrash />} />
         </div>
-        <Table>
-          <table>
-            <tbody>
-              {group.members.map((member, memberIndex) => (
-                <tr key={memberIndex}>
-                  <td><Bubble {...{ name: member.role }} /></td>
-                  <td>
-                    <Select
-                      defaultValue={member.role}
-                      value={member.role}
-                      style={{ width: 200 }}
-                      onChange={(event) =>
-                        updateMember(groupIndex, memberIndex, {
-                          ...member,
-                          role: event,
-                        })
-                      }
-                      options={roles}
-                    />
-                  </td>
-                  <td>
-                    <Select
-                      defaultValue={'member'}
-                      value={member.name}
-                      style={{ width: 200 }}
-                      onChange={(event) =>
-                        updateMember(groupIndex, memberIndex, {
-                          ...member,
-                          name: event,
-                        })
-                      }
-                      options={[{ value: 'member', label: ' AnyMember' }, ...people]}
-                      showSearch
-                      optionFilterProp="children"
-                      filterOption={(input, option) => (option?.label.toLowerCase() ?? '').includes(input.toLowerCase())}
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                    />
-                  </td>
-                  <td>
-                    <Select
-                      defaultValue={sprintWorkDuration}
-                      value={member.commitment}
-                      style={{ width: 120 }}
-                      onChange={(event) =>
-                        updateMember(groupIndex, memberIndex, {
-                          ...member,
-                          commitment: event,
-                        })
-                      }
-                      options={range(1, sprintWorkDuration).map(e => { return { label: `${e} day${e > 1 ? 's' : ''}`, value: e } })}
-                    /></td>
-                  <td><Button onClick={() => { deleteMember(groupIndex, memberIndex) }} icon={<FiTrash />} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <Table minified empty={!(group.members.length > 0)}>
+        { group.members.length > 0 ? <table>
+          <thead>
+            <tr>
+              <th  style={{width: '54px'}}/>
+              <th style={{ width: 240 }}>Role*</th>
+              <th>Assignee</th>
+              <th style={{width: '140px'}}>Commitment*</th>
+              <th style={{width: '54px'}}>...</th>
+            </tr>
+          </thead>
+          <tbody>
+            {group.members.map((member, memberIndex) => (
+              <tr key={memberIndex}>
+                <td><Bubble {...{ name: member.role }} /></td>
+                <td>
+                  <Select
+                    defaultValue={member.role}
+                    value={member.role}
+                    style={{ width: 200 }}
+                    onChange={(event) =>
+                      updateMember(groupIndex, memberIndex, {
+                        ...member,
+                        role: event,
+                      })
+                    }
+                    options={roles}
+                  />
+                </td>
+                <td>
+                  <Select
+                    defaultValue={'member'}
+                    value={member.name}
+                    style={{ width: 200 }}
+                    onChange={(event) =>
+                      updateMember(groupIndex, memberIndex, {
+                        ...member,
+                        name: event,
+                      })
+                    }
+                    options={[{ value: 'member', label: ' AnyMember' }, ...people]}
+                    showSearch
+                    optionFilterProp="children"
+                    filterOption={(input, option) => (option?.label.toLowerCase() ?? '').includes(input.toLowerCase())}
+                    filterSort={(optionA, optionB) =>
+                      (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                    }
+                  />
+                </td>
+                <td>
+                  <Select
+                    defaultValue={sprintWorkDuration}
+                    value={member.commitment}
+                    style={{ width: 120 }}
+                    onChange={(event) =>
+                      updateMember(groupIndex, memberIndex, {
+                        ...member,
+                        commitment: event,
+                      })
+                    }
+                    options={range(1, sprintWorkDuration).map(e => { return { label: `${e} day${e > 1 ? 's' : ''}`, value: e } })}
+                  /></td>
+                <td><Button onClick={() => { deleteMember(groupIndex, memberIndex) }} icon={<FiTrash />} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table> : <Box pad={['x2']}><Empty /></Box> }
         </Table>
       </RowGroup>
     )
@@ -189,7 +187,9 @@ export const ManageMembers = () => {
           </SprintGroup>
         )
       })}
-      <Button type="primary" disabled={groups[groups.length - 1]?.to >= projectSprints} style={{borderRadius: Theme.primary.radius}} size="large" onClick={addGroup}>Add Group</Button>
+      <Button type="primary" disabled={groups[groups.length - 1]?.to >= projectSprints} style={{borderRadius: Theme.primary.radius}} size="large" onClick={addGroup}>Add New Group</Button>
+      <Box pad={['x2']} />
+      <Warning><strong>Up to*</strong> sprint, allows you to set the sprint range affected by this group from the last one set on the previous group.</Warning>
     </div>
   );
 }
