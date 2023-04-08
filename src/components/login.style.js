@@ -3,6 +3,7 @@ import Theme from "../utility/theme";
 
 import GoogleLogo from "../assets/google_logo.svg";
 import { useState } from "react";
+import { Bubble } from "./input.style";
 
 
 const ModalWrap = styled.div`
@@ -111,7 +112,7 @@ export const GoogleButton = styled.button`
 export const GoogleProfile = ({picture, name, email, logOut}) => {
     const [drop, setDrop] = useState(false);
     return <ProfileWrapper onClick={()=> setDrop(!drop)} show={drop}>
-        <img src={picture} alt="user profile" />
+        <Bubble name={name} />
         <div>
             <strong>{name}</strong>
 <span>{email}</span>
