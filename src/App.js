@@ -23,7 +23,7 @@ export const UserContext = React.createContext();
 function App() {
   // State variables
   const [user, setUser] = useState(Cookies.get('userDetails') ? JSON.parse(Cookies.get('userDetails')) : null);
-  const [profile, setProfile] = useState(Cookies.get('profile') ? JSON.parse(Cookies.get('profile')) : null);
+  const [profile, setProfile] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
   const [sheetMembers, setSheetMembers] = useState(null);
   const [sheetDomains, setSheetDomains] = useState(null);
@@ -46,7 +46,6 @@ function App() {
     setProfile(null);
     setUser(null);
     Cookies.remove('userDetails');
-    Cookies.remove('profile');
   };
 
   // Fetch acceptable domains and sheet data on mount

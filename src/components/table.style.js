@@ -1,5 +1,5 @@
 import { darken, transparentize } from "polished";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import Theme from "../utility/theme";
 
 export const Table = styled.div`
@@ -82,26 +82,6 @@ export const Table = styled.div`
     }
 }
 }
-${props=> props.minified && css`
-    /* padding-bottom: -2px; */
-    & table{
-        & thead{
-            border-top: none;
-            background: ${transparentize(0.5, Theme.primary.colors.border)};
-            & th{
-                padding: ${Theme.dimensions.x05} ${Theme.dimensions.x1};
-                font-size: 0.8rem;
-            }
-        }
-        & tbody{
-            & tr{
-                &:last-child{
-                    border-bottom: none;
-                }
-            }
-        }
-    }
-`}
 `;
 
 export const FreeTable = styled.table`
