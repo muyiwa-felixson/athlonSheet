@@ -63,8 +63,8 @@ export const Grid = styled.div`
 export const Warning = styled.div`
     padding: ${Theme.dimensions.x2};
     border-radius: ${Theme.primary.radius};
-    border: 1px solid ${ transparentize(0.6,Theme.primary.colors.google)};
-    background-color: ${ transparentize(0.9,Theme.primary.colors.google)};
-    color: ${darken(0.1, Theme.primary.colors.google)};
+    border: 1px solid ${props=> transparentize(0.6,props.color ? props.color : Theme.primary.colors.google)};
+    background: ${props=> transparentize(0.9,props.color ? props.color : Theme.primary.colors.google)};
+    color: ${props=> darken(0.1, props.color ? props.color : Theme.primary.colors.google)};
     max-width: 1000px;
 `

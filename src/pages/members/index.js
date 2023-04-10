@@ -9,6 +9,7 @@ import { Bubble } from '../../components/input.style';
 import { FiTrash } from 'react-icons/fi';
 import Theme from '../../utility/theme';
 import { Box, Warning } from '../../components/layout.style';
+import { darken } from 'polished';
 
 export const ManageMembers = () => {
   const UserData = React.useContext(UserContext);
@@ -111,7 +112,7 @@ export const ManageMembers = () => {
               <th  style={{width: '54px'}}/>
               <th style={{ width: 240 }}>Role*</th>
               <th>Assignee</th>
-              <th style={{width: '140px'}}>Commitment*</th>
+              <th style={{width: '180px'}}>Commitment per sprint*</th>
               <th style={{width: '54px'}}>...</th>
             </tr>
           </thead>
@@ -170,7 +171,7 @@ export const ManageMembers = () => {
               </tr>
             ))}
           </tbody>
-        </table> : <Box pad={['x2']}><Empty /></Box> }
+        </table> : <Box pad={['x2']}><Empty description="No sprint load members" image={Empty.PRESENTED_IMAGE_SIMPLE} /></Box> }
         </Table>
       </RowGroup>
     )
@@ -178,6 +179,7 @@ export const ManageMembers = () => {
 
   return (
     <div>
+      { groups.length > 0 ? <>
       {groups.map((group, index) => {
         const previousTo = index > 0 ? groups[index - 1].to : 0;
         const sprintDays = (group.to - previousTo) * 10;
@@ -189,7 +191,10 @@ export const ManageMembers = () => {
       })}
       <Button type="primary" disabled={groups[groups.length - 1]?.to >= projectSprints} style={{borderRadius: Theme.primary.radius}} size="large" onClick={addGroup}>Add New Group</Button>
       <Box pad={['x2']} />
-      <Warning><strong>Up to*</strong> sprint, allows you to set the sprint range affected by this group from the last one set on the previous group.</Warning>
+      <Warning color={ darken(0.2, Theme.primary.colors.border)}><strong>Up to*</strong> You can set the range of sprints affected by this group from the last one set on the previous group.</Warning>
+      </> : <>
+      <Empty style={{ maxWidth: '1000px'}} description="You currently have no sprint load" ><Button type="primary" disabled={groups[groups.length - 1]?.to >= projectSprints} style={{borderRadius: Theme.primary.radius}} size="large" onClick={addGroup}>Add New Group</Button></Empty>
+      </>}
     </div>
   );
 }
