@@ -2,11 +2,12 @@ import styled, { css } from "styled-components";
 import Theme from "../utility/theme";
 
 export const SprintGroup = styled.div`
-    border-radius: ${Theme.secondary.radius} ${Theme.secondary.radius} 0 0;
+    border-radius: ${Theme.secondary.radius};
     border: 1px solid ${Theme.primary.colors.border};
-    border-bottom: none ;
     max-width: 1000px;
-    margin: ${Theme.dimensions.x2} 0;
+    overflow: hidden;
+    margin: ${Theme.dimensions.x3} 0;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
     
     & .groupHeader{
         padding: ${Theme.dimensions.x2};
@@ -39,4 +40,11 @@ export const RowGroup = styled.div`
             }
         }
     `}
+`;
+
+export const SprintContainer = styled.div`
+    height: calc(100vh - 82px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: ${Theme.dimensions.x5} ${Theme.dimensions.x0};
 `;

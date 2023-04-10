@@ -48,6 +48,7 @@ useEffect(
                     console.log(UserData.user.get);
                     if(res.status === 200){
                         UserData.profile.set(res.data);
+                        Cookies.set("profile", JSON.stringify(res.data), { expires: 3 });
                     } else {
                         UserData.loginStatus.set(null);
                         logOut();

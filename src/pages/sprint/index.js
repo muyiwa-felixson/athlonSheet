@@ -6,6 +6,7 @@ import { TimeZone } from '../../components/caterpillar.style';
 import { Header } from '../../components/header.style';
 import dayjs from 'dayjs';
 import { sprintDuration } from '../../utility/util';
+import { SprintContainer } from '../../components/sprintLoad.style';
 
 const SprintSheet = () => {
   const { invoice } = useContext(UserContext);
@@ -71,9 +72,9 @@ const SprintSheet = () => {
       <Header>
         <h4>Sprint Timeline</h4>
       </Header>
-      <Box pad={['x5', 'x0']}>
+      <SprintContainer>
         <Timeline mode="alternate" items={items} />
-      </Box>
+      </SprintContainer>
     </>
   );
 };
