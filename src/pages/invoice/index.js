@@ -1,48 +1,20 @@
-import React, { useContext } from 'react';
-import { Tabs } from 'antd';
-import { UserContext } from '../../App';
-import MembersTab from './members.tab';
-import { FiPackage, FiCreditCard, FiUsers, FiPercent, FiList } from 'react-icons/fi';
-import { TabItem } from '../../components/tab.style';
-import RateTab from '../rates/ratecard';
-import Customer from './customer';
-import ProjectTab from './project.tab';
-import DiscountTab from './discount.tab';
-import SprintTable from '../sprint/sprintTable';
+import React from 'react';
+import Customer from '../customer/customer';
+import { ManageDiscounts } from '../discounts';
+import { Box } from '../../components/layout.style';
+import { ManageMembers } from '../members';
+import { ManageProject } from '../projects';
 
 
 const Invoice = () => {
-  const UserData = useContext(UserContext);
-    const items = [
-        {
-          key: '1',
-          label: <TabItem><FiPackage /> Project Details</TabItem>,
-          children: <ProjectTab />,
-        },
-        {
-          key: '2',
-          disabled: !(typeof UserData.invoice.get.customer === 'object'),
-          label: <TabItem><FiUsers /> Members & Sprint Loading</TabItem>,
-          children: <MembersTab />,
-        },
-        {
-          key: '3',
-          disabled: !(typeof UserData.invoice.get.customer === 'object'),
-          label: <TabItem><FiPercent /> Discount &amp; Extra Costs</TabItem>,
-          children: <DiscountTab />,
-        },
-        {
-          key: '4',
-          label: <TabItem><FiCreditCard /> Rate Card</TabItem>,
-          children: <RateTab />,
-        }
-      ];
-      // console.log("Excluded", UserData.invoice.get.excluded);
 
-    return<>
+    return<div>
     <Customer />
-    <Tabs animated defaultActiveKey="1" items={items}  />
-    </>
+    <ManageProject />
+    <ManageMembers />
+    <ManageDiscounts />
+    <Box pad={['x3']} />
+    </div>
 }
 
 export default Invoice;

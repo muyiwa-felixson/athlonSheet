@@ -14,9 +14,10 @@ import { Loader } from './components/loading.style';
 import { sheetDataToObject } from './utility/util';
 import Invoice from './pages/invoice';
 import { Layout, Timeline } from './components/layout.style';
-import SprintSheet from './pages/sprint';
+import SprintSheet from './pages/sprint/sprintTimeline';
 import Theme from './utility/theme';
 import ExportInvoice from './pages/export';
+import RateTab from './pages/rates/ratecard';
 
 export const UserContext = React.createContext();
 
@@ -28,6 +29,7 @@ function App() {
   const [sheetMembers, setSheetMembers] = useState(null);
   const [sheetDomains, setSheetDomains] = useState(null);
   const [modal, setModal] = useState(false);
+  const [rateModal, setRateModal] = useState(false);
   const [sheet, setSheet] = useState({});
   const [excluded, setExcluded] = useState(Cookies.get('excluded') && Cookies.get('excluded') !== 'undefined' ? JSON.parse(Cookies.get('excluded')) : {});
   const [sheetRates, setSheetRates] = useState(
@@ -38,7 +40,7 @@ function App() {
     rates: false,
     members: false
   });
-  const [showTimeline, setShowTimeline] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(true);
 
   // Logout function
   const logOut = () => {
@@ -72,7 +74,7 @@ function App() {
       })
       .catch((error) => console.log(error));
 
-    if (!Cookies.get('sheetRates')) {
+    if (!Cookies.get('sheetRates') || Cookies.get('sheetRates') === 'null') {
       fetchRateData()
         .then((value) => {
           setSheetRates(sheetDataToObject(value));
@@ -102,68 +104,76 @@ function App() {
         activity: { get: activity, set: setActivity },
         data: { members: { get: sheetMembers, set: setSheetMembers }, rateCard: { get: sheetRates, set: setSheetRates } },
         logOut: logOut,
-        invoice: { get: invoice, set: setInvoice},
+        invoice: { get: invoice, set: setInvoice },
         timeline: { get: showTimeline, set: setShowTimeline },
-        sheet: {get: sheet, set: setSheet},
-        excluded: {get: excluded, set: setExcluded}
-        }}
-        >
-        {sheetDomains ? (
+        sheet: { get: sheet, set: setSheet },
+        excluded: { get: excluded, set: setExcluded }
+      }}
+    >
+      {sheetDomains ? (
         <Layout showTimeline={showTimeline}>
-        {/* Render app content if user is logged in */}
-        {profile?.email ? (
-        <>
-        <div className="mainpanel">
-        <Header>
-        <Logo className="topbrand" />
-        <div />
-            <Button size="large" style={{borderRadius: Theme.primary.radius}} onClick={()=> reset()}>Reset Sheet</Button>
-             <Button type="primary" size="large" style={{borderRadius: Theme.primary.radius}} onClick={()=> setModal(!modal)} disabled={invoice.customer ? false : true}>Generate Invoice</Button>
-        
-        <GoogleProfile {...profile} logOut={logOut} />
-        </Header>
-        <Invoice />
-        <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{padding: Theme.dimensions.x1}} width={1200}>
-            { modal && <ExportInvoice onClose={()=> setModal(false)} /> }
-       </AntModal>
-          </div>
-          <Timeline>
-            <SprintSheet />
-          </Timeline>
-        </>
+          {/* Render app content if user is logged in */}
+          {profile?.email ? (
+            <>
+              <div className="mainpanel">
+                <Header>
+                  <Logo className="topbrand" />
+                  <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={invoice.customer ? false : true}>Rate Card</Button>
+                  <GoogleProfile {...profile} logOut={logOut} />
+                </Header>
+                <div className='midpanel'>
+                  <Invoice />
+                  <Timeline>
+                    <SprintSheet />
+                  </Timeline>
+                </div>
+                <Header foot>
+                  <div/>
+                <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()}>Reset Sheet</Button>
+                  <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true}>Generate Invoice</Button>
+                </Header>
+                <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
+                  {modal && <ExportInvoice onClose={() => setModal(false)} />}
+                </AntModal>
+                <AntModal title={null} open={rateModal} footer={null} closable={true} onCancel={()=> setRateModal(false)} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
+                  {rateModal && <RateTab />}
+                </AntModal>
+              </div>
+            </>
+          ) : (
+            <>
+            
+              {/* Render login form if user is not logged in */}
+              <Modal
+                attache={
+                  loginStatus === 'invalid domain' ? (
+                    <Warning>We apologize, but the application is not accessible to email domains such as yours.</Warning>
+                  ) : (
+                    ''
+                  )
+                }
+              >
+                <LoginWrapper>
+                  <Logo className="brand" />
+                  <h2>Sign in with your athlon mail</h2>
+                  <GoogleAuth />
+                </LoginWrapper>
+              </Modal>
+            </>
+          )}
+        </Layout>
       ) : (
-        <>
-          {/* Render login form if user is not logged in */}
-          <Modal
-            attache={
-              loginStatus === 'invalid domain' ? (
-                <Warning>We apologize, but the application is not accessible to email domains such as yours.</Warning>
-              ) : (
-                ''
-              )
-            }
-          >
-            <LoginWrapper>
-              <Logo className="brand" />
-              <h2>Sign in with your athlon mail</h2>
-              <GoogleAuth />
-            </LoginWrapper>
-          </Modal>
-        </>
+        // Render loader while sheet domains are being fetched
+        <div>
+          <Loader />
+        </div>
       )}
-    </Layout>
-  ) : (
-    // Render loader while sheet domains are being fetched
-    <div>
-      <Loader />
-    </div>
-  )}
-</UserContext.Provider>
-);
+    </UserContext.Provider>
+  );
 }
 
 export default App;
 
 
 
-        
+
