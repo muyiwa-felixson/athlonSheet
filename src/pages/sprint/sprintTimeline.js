@@ -15,7 +15,7 @@ const SprintSheet = () => {
   const loading = invoice?.get.loading;
 
   const getGroup = (sprint) => {
-        return loading.findIndex(group => group.to >= sprint);
+        return loading ? loading.findIndex(group => group.to >= sprint) : 0;
   }
 
   const spreadSprint = () => {
@@ -74,7 +74,7 @@ const SprintSheet = () => {
 
 
     });
-    items.push({
+    project.sprints > 0 && items.push({
       color: 'black',
       children: (
         <TimeZone>
