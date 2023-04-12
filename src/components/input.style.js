@@ -134,7 +134,7 @@ export const InputAutoComplete = props => {
     </SeachInputWrapper>
 }
 
-export const TableInput = styled.span`
+export const TableInput = styled.input`
     display: flex;
     padding: ${Theme.dimensions.x05};
     width: auto;
@@ -144,8 +144,9 @@ export const TableInput = styled.span`
 
     &:hover{
         background: ${transparentize(0.9, Theme.primary.colors.google)};
+        border: 1px solid ${transparentize(0.6, Theme.primary.colors.google)};
     }
-    ${props => props.active && css`
+    ${props => props.highlight && css`
         background: ${transparentize(0.6, Theme.primary.colors.google)};
         color: ${Theme.primary.colors.google};
         font-weight: 600;

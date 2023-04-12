@@ -51,7 +51,7 @@ export const Table = styled.div`
     color: ${darken(0.2, Theme.primary.colors.green)};
     border-left: 5px solid ${darken(0.2, Theme.primary.colors.green)};
     & strong{
-        font-size: 1rem;
+        /* font-size: 1rem; */
     }
 }
 .totalBody{
@@ -135,5 +135,8 @@ export const SheetHeader = styled.div`
 export const AthlonSheet = styled.div`
 @media print {
     font-size: 10px;
+    & .invoiceRow strong{
+        font-weight: 600;
+    }
 }
 `;

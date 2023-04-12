@@ -5,7 +5,7 @@ import { DownloadTableExcel } from 'react-export-table-to-excel';
 import dayjs from 'dayjs';
 import Theme from "../../utility/theme";
 import { AthlonSheet, FreeTable, SheetHeader, Table } from "../../components/table.style";
-import SprintTable from "../sprint/sprintTable";
+import SprintTable from "../sprint";
 import { Empty, Space, Button, Dropdown } from "antd";
 import { Box, Grid } from "../../components/layout.style";
 import Logo from "../../assets/logo";
@@ -44,7 +44,7 @@ const ExportInvoice = props => {
       };
     
     const items = [{ key: '1', label: (<span onClick={handleDownloadPdf}>Download PDF</span>) }, { key: '2', label: (<DownloadTableExcel
-        filename={`Athlon Sheet: ${UserData.invoice.get.customer.name}_${UserData.invoice.get.project.name}`}
+        filename={`Athlon Sheet: ${UserData.invoice?.get.customer?.name}_${UserData.invoice?.get.project?.name}`}
         sheet="Invoice"
         currentTableRef={dataTable.current}
     >
@@ -77,25 +77,18 @@ const ExportInvoice = props => {
                 </Box>
             </Grid>
             { UserData.sheet?.get.length > 0 && <Box pad={['x3', 'x0']}>
-                <FreeTable>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <span>Invoice for</span>
-                                <strong>{UserData.invoice.get.customer.name}</strong>
-                                <span>{UserData.invoice.get.customer.contactName} ({UserData.invoice.get.customer.contactEmail})</span>
-                            </td>
-                            <td>
-                                <span>Project Name</span>
-                                <strong>{UserData.invoice.get.project.name}</strong>
-                            </td>
-                            <td>
-                                <span>Project Start</span>
-                                <strong>{dayjs(UserData.invoice.get.project.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
-                            </td>
-                        </tr>
-                    </tbody>
-                </FreeTable>
+                <Grid cols="1fr 2fr" gap={`${Theme.dimensions.x9}`} style={{ alignItems: 'start'}}>
+                    <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
+                        <span>Client: </span><strong>{UserData.invoice.get.customer.name}</strong>
+                        <span>Contact: </span><div><strong>{UserData.invoice.get.customer.contactName}</strong><br/><strong>{UserData.invoice.get.customer.contactEmail}</strong></div>
+                        <span>Project: </span><strong>{UserData.invoice.get.project.name}</strong>
+                        <span>Start: </span><strong>{dayjs(UserData.invoice.get.project.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
+                    </Grid>
+                    <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
+                        <span>Date Created: </span><strong>{dayjs(dayjs(), 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
+                        <span>Created By: </span><div><strong>{UserData.profile?.get.name}</strong></div>
+                    </Grid>
+                </Grid>
             </Box>
             }
             {UserData.sheet?.get.length > 0 ? <Table><table ref={dataTable}>

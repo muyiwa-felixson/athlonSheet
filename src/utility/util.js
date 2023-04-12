@@ -47,6 +47,14 @@ export const sheetDataToObject=(sheetData)=> {
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 
+  export const colorFromNumber = (number) => {
+    const hue = (number * 64) % 360;
+    const saturation = 80;
+    const lightness = 40;
+  
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  }
+
 export const businessTypes = [
     { label: 'Enterprise', value: 'enterprise' },
     { label: 'Small Business', value: 'sme' },
@@ -60,7 +68,6 @@ export const projectTypes = [
 ];
 
 export const travelTypes = [
-  { label: 'None', value: 'none' },
   { label: 'Per Sprint', value: 'sprint' },
   { label: 'Lump Sum', value: 'lumpsum' },
 ];
@@ -68,6 +75,12 @@ export const travelTypes = [
 export const billCycleTypes = [
   { label: 'Sprint Start', value: 'start' },
   { label: 'Sprint End', value: 'end' },
+];
+
+export const discountTypes = [
+  { label: 'none', value: false },
+  { label: 'To Team Costs only', value: 'team' },
+  { label: 'To Team Costs & Travel + Research', value: 'total' },
 ];
 
 export const sprintDuration = 14;

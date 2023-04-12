@@ -12,10 +12,13 @@ export const Layout = styled.div`
     & .ant-tabs-nav{
         padding: 0 ${Theme.dimensions.x5};
     }
+    
+    & .midpanel{
     display: grid;
     transition: 0.3s all ease-in;
     grid-template-columns: auto 0;
     min-height: 100vh;
+    }
     color: ${Theme.primary.colors.black};
     & .mainpanel{
         position: relative;
@@ -23,10 +26,12 @@ export const Layout = styled.div`
         box-shadow: 5px 0 15px rgba(0,0,0,0.05);
     }
     ${props=> props.showTimeline && css`
+    & .midpanel{
         grid-template-columns: auto 400px;
         ${Timeline}{
             border-left: 1px solid ${Theme.primary.colors.border};
         }
+    }
     `}
 
     & .ant-form-item{
@@ -68,3 +73,9 @@ export const Warning = styled.div`
     color: ${props=> darken(0.1, props.color ? props.color : Theme.primary.colors.google)};
     max-width: 1000px;
 `
+
+export const Label = styled.div`
+    display: block;
+    /* font-size: 1rem; */
+    margin-bottom: ${Theme.dimensions.x05};
+`;
