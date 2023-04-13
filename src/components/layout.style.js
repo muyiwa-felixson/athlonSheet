@@ -17,6 +17,7 @@ padding-bottom: 80px;;
     & .midpanel{
     max-width: 1440px;
     margin: 0 auto;
+    padding: 0 ${Theme.dimensions.x5};
     display: grid;
     transition: 0.3s all ease-in;
     grid-template-columns: 1fr;

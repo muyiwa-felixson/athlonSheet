@@ -13,7 +13,7 @@ export const Header = styled.div`
         display: grid;
         grid-template-columns: auto max-content max-content;
         grid-gap: ${Theme.dimensions.x2};
-        padding: ${Theme.dimensions.x2} 0;
+        padding: ${Theme.dimensions.x2} ${Theme.dimensions.x5};
     }
 
     ${props=> props.foot && css`
