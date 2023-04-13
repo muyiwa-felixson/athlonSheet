@@ -9,7 +9,8 @@ export const Box = styled.div`
 `;
 
 export const Layout = styled.div`
-padding-bottom: 80px;;
+min-width: 800px;
+padding-bottom: 80px;
     & .ant-tabs-nav{
         padding: 0 ${Theme.dimensions.x5};
     }
