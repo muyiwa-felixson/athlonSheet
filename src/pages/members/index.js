@@ -29,7 +29,7 @@ export const ManageMembers = () => {
     if (stat === 'new' || previousto < projectSprints) {
       const newGroup = {
         // name: `group ${newGroupIndex}`,
-        to: previousto + 1,
+        to: stat === 'new' ? projectSprints : previousto + 1,
         members: [],
       };
       setGroups([...groups, newGroup]);

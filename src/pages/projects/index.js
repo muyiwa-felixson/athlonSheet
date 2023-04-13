@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UserContext } from '../../App';
-import { Input, Radio, DatePicker, InputNumber, Switch, Select } from 'antd';
+import { Input, Radio, DatePicker, InputNumber, Select } from 'antd';
 import Cookies from "js-cookie";
 import dayjs from 'dayjs';
 import { Box, Grid, Label } from '../../components/layout.style';
@@ -11,7 +11,7 @@ export const ManageProject = () => {
     const UserData = React.useContext(UserContext);
     const [project, setProject] = useState(UserData.invoice?.get.project ? UserData.invoice.get.project : {
         name: '',
-        date: dayjs(dayjs(), dateFormat),
+        date: dayjs(dayjs(), dateFormat).format(dateFormat),
         type: 'sprint',
         sprints: 0,
         billrate: 2,
@@ -41,7 +41,7 @@ export const ManageProject = () => {
                 </Box>
                 <Box>
                     <Label>Project Start Date</Label>
-                    <div><DatePicker value={project.date !== null ? dayjs(project.date, dateFormat) : dayjs(dayjs(), dateFormat)} onChange={(e, str) => changeValue({ target: { value: str } }, 'date')} format={dateFormat} /></div>
+                    <div><DatePicker value={dayjs(project.date, dateFormat)} onChange={(e, str) => changeValue({ target: { value: str } }, 'date')} format={dateFormat} /></div>
                 </Box>
                 <Box>
                     <Label>Project Type:</Label>
@@ -61,7 +61,7 @@ export const ManageProject = () => {
                 <Box>
                     <Label>Billing Cycle Type</Label>
                     <Radio.Group value={project.billcycle} onChange={e => changeValue(e, 'billcycle')}>
-                        {billCycleTypes.map((e, i) => <Box key={`bill_cycle_${i}`}  pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
+                        {billCycleTypes.map((e, i) => <Box key={`bill_cycle_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                     </Radio.Group>
                 </Box>
 
