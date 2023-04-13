@@ -147,8 +147,8 @@ export const TableInput = styled.input`
         border: 1px solid ${transparentize(0.6, Theme.primary.colors.google)};
     }
     ${props => props.highlight && css`
-        background: ${transparentize(0.6, Theme.primary.colors.google)};
+        background: ${transparentize(0.95, Theme.primary.colors.google)};
         color: ${Theme.primary.colors.google};
-        font-weight: 600;
+        /* font-weight: 600; */
     `}
 `;

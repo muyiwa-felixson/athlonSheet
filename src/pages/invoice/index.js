@@ -8,13 +8,13 @@ import { ManageProject } from '../projects';
 
 const Invoice = () => {
 
-    return<div>
-    <Customer />
-    <ManageProject />
-    <ManageMembers />
-    <ManageDiscounts />
-    <Box pad={['x3']} />
-    </div>
+    return <div>
+            <Customer />
+            <ManageProject />
+            <ManageMembers />
+            <ManageDiscounts />
+            <Box pad={['x3']} />
+            </div>
 }
 
 export default Invoice;

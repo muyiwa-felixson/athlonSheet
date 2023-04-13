@@ -31,7 +31,7 @@ export const ManageProject = () => {
     }, [project]);
 
     return (
-        <><Box pad={['x2', 'x5']}>
+        <><Box pad={['x2', 'x0']}>
             <h4>Project Details</h4>
             <Box pad={['x1']} />
             <Grid cols="1fr" width="300px" gap={`${Theme.dimensions.x3} ${Theme.dimensions.x3}`} vAlign="center">

@@ -28,7 +28,7 @@ const Customer = () => {
         Cookies.set("invoice", JSON.stringify(newInvoice), { expires: 3 });
     }, [customer]);
 
-    return <Box pad={['x5', 'x5','x2','x5']}>
+    return <Box pad={['x5', 'x5','x2','x0']}>
         <h4>Customer Details</h4>
         <Box pad={['x1']} />
         <Grid cols="1fr" width="300px" gap={`${Theme.dimensions.x2} ${Theme.dimensions.x3}`} vAlign="center">

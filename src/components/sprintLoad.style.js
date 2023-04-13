@@ -45,6 +45,9 @@ export const RowGroup = styled.div`
 
 export const SprintContainer = styled.div`
     padding: ${Theme.dimensions.x5} ${Theme.dimensions.x0};
+    & ul{
+        margin-left: -${Theme.dimensions.x10};
+    }
 `;
 
 export const Dotter = styled.div`

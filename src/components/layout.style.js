@@ -9,14 +9,17 @@ export const Box = styled.div`
 `;
 
 export const Layout = styled.div`
+padding-bottom: 80px;;
     & .ant-tabs-nav{
         padding: 0 ${Theme.dimensions.x5};
     }
     
     & .midpanel{
+    max-width: 1440px;
+    margin: 0 auto;
     display: grid;
     transition: 0.3s all ease-in;
-    grid-template-columns: auto 0;
+    grid-template-columns: 1fr;
     min-height: 100vh;
     }
     color: ${Theme.primary.colors.black};
@@ -28,6 +31,7 @@ export const Layout = styled.div`
     ${props=> props.showTimeline && css`
     & .midpanel{
         grid-template-columns: auto 400px;
+        
         ${Timeline}{
             border-left: 1px solid ${Theme.primary.colors.border};
         }
@@ -44,7 +48,8 @@ export const Layout = styled.div`
 
 export const Timeline = styled.div`
     overflow: hidden;
-    background: ${transparentize(0.8, Theme.primary.colors.border)};
+    background: ${transparentize(0.9, Theme.primary.colors.border)};
+    border-right: 1px solid ${Theme.primary.colors.border};
     &>div{
         width: 400px;
     }

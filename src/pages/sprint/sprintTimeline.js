@@ -86,9 +86,9 @@ const SprintSheet = () => {
     })
   return (
     <>
-      <Header>
+      <Box pad={['x3','x5']}>
         <h4>Sprint Timeline</h4>
-      </Header>
+      </Box>
       <SprintContainer>
         <Timeline mode="alternate" items={items} />
       </SprintContainer>

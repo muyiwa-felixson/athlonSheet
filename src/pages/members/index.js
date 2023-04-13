@@ -181,7 +181,7 @@ export const ManageMembers = () => {
   };
 
   return (
-    <Box pad={['x2', 'x5']}>
+    <Box pad={['x2', 'x0']}>
       <h4>Members & Sprint Loading</h4>
       {groups.length > 0 ? <>
         {groups.map((group, index) => {

@@ -14,6 +14,7 @@ const RateTab = props => {
     const previous = UserData.data?.rateCard?.get ? UserData.data.rateCard.get : [];
     const [rateChanged, setRateChanged] = useState(false);
     const [activity, setActivity] = useState(false);
+    const [changes, setChanges] = useState([]);
     const [rate, setRate] = useState([...previous]);
 
     // console.log(UserData.data.rateCard.get)
@@ -22,35 +23,39 @@ const RateTab = props => {
         const value = e.target.value;
         let newRateCard = [...rate];
         newRateCard[i][type] = value;
+        const changeVal = `${i}_${type}`;
+        if(!changes.includes(changeVal)){ setChanges([...changes, changeVal]) };
         setRate(newRateCard);
         setRateChanged(true);
     }
-
+    
     const saveCost = () => {
         setRateChanged(false);
+        setChanges([]);
         UserData.data.rateCard.set(rate);
         Cookies.set("sheetRates", JSON.stringify(rate), { expires: 3 });
     }
-
-
     
-      // Fetch sheet members and rate cards
-      const reset = () => {   
+    
+    
+    // Fetch sheet members and rate cards
+    const reset = () => {   
         setActivity(true);
-          fetchRateData()
-            .then((value) => {
-                setActivity(false);
-              setRate(sheetDataToObject(value));
-              setRateChanged(false);
-                UserData.data.rateCard.set(sheetDataToObject(value));
-                Cookies.set("sheetRates", JSON.stringify(sheetDataToObject(value)), { expires: 3 });
-            })
-            .catch((error) => {
-                console.log(error);
-                setActivity(false);
-            });
-      };
-
+        fetchRateData()
+        .then((value) => {
+            setActivity(false);
+            setRate(sheetDataToObject(value));
+            setRateChanged(false);
+            UserData.data.rateCard.set(sheetDataToObject(value));
+            Cookies.set("sheetRates", JSON.stringify(sheetDataToObject(value)), { expires: 3 });
+        })
+        .catch((error) => {
+            console.log(error);
+            setActivity(false);
+        });
+    };
+    
+    console.log(changes);
     const cols = [
         {
             title: "Role",
@@ -67,23 +72,23 @@ const RateTab = props => {
         [{
             title: "Daily rate",
             dataIndex: 'enterprise_daily',
-            render: (v, row, i) => <><TableInput onChange={(e) => editRateCost(i, 'enterprise_daily', e)} value={v} /></>
+            render: (v, row, i) => <><TableInput onChange={(e) => editRateCost(i, 'enterprise_daily', e)} value={v} highlight={changes.includes(`${i}_enterprise_daily`)} /></>
         },
         {
             title: "Hourly Rate",
             dataIndex: 'enterprise_hourly',
-            render: (v, row, i) => <TableInput onChange={(e) => editRateCost(i, 'enterprise_hourly', e)} value={v} />
+            render: (v, row, i) => <TableInput onChange={(e) => editRateCost(i, 'enterprise_hourly', e)} value={v}  highlight={changes.includes(`${i}_enterprise_hourly`)} />
         }]
     ) : (
         [{
             title: "Daily rate",
             dataIndex: 'sme_daily',
-            render: (v, row, i) => <TableInput onChange={(e) => editRateCost(i, 'sme_daily', e)} value={v} />
+            render: (v, row, i) => <TableInput onChange={(e) => editRateCost(i, 'sme_daily', e)} value={v}  highlight={changes.includes(`${i}_sme_daily`)} />
         },
         {
             title: "Hourly Rate",
             dataIndex: 'sme_hourly',
-            render: (v, row, i) => <TableInput onChange={(e) => editRateCost(i, 'sme_hourly', e)} value={v} />
+            render: (v, row, i) => <TableInput onChange={(e) => editRateCost(i, 'sme_hourly', e)} value={v}  highlight={changes.includes(`${i}_sme_hourly`)} />
         }]
     )
     let column = cols.concat(business);

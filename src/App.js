@@ -117,9 +117,11 @@ function App() {
             <>
               <div className="mainpanel">
                 <Header>
+                  <div className='cage'>
                   <Logo className="topbrand" wide/>
                   <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true}>Rate Card</Button>
                   <GoogleProfile {...profile} logOut={logOut} />
+                  </div>
                 </Header>
                 <div className='midpanel'>
                   <Invoice />
@@ -128,9 +130,11 @@ function App() {
                   </Timeline>
                 </div>
                 <Header foot>
+                <div className='cage'>
                   <div/>
                 <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()}>Reset Sheet</Button>
                   <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true}>Generate Invoice</Button>
+                </div>
                 </Header>
                 <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
                   {modal && <ExportInvoice onClose={() => setModal(false)} />}

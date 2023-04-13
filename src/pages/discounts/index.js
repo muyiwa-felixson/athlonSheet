@@ -33,7 +33,7 @@ export const ManageDiscounts = props => {
 
 
     return (
-        <Box pad={['x0', 'x5']}>
+        <Box pad={['x0', 'x0']}>
             <Box pad={['x2', 'x0']}>
                 <h4>Travel & Research</h4>
                 <Box pad={['x1']} />
