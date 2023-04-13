@@ -73,7 +73,7 @@ const ExportInvoice = props => {
                     <Logo wide="true" style={{ height: Theme.dimensions.x8 }} />
                 </Box>
                 <Box>
-                    <h4>Athlon Sheet</h4>
+                    {/* <h4>Athlon Sheet</h4> */}
                 </Box>
             </Grid>
             { UserData.sheet?.get.length > 0 && <Box pad={['x3', 'x0']}>
