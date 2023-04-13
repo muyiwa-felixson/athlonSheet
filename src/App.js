@@ -130,7 +130,7 @@ function App() {
                 <Header foot>
                   <div/>
                 <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()}>Reset Sheet</Button>
-                  <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true}>Generate Invoice</Button>
+                  <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)}>Generate Invoice</Button>
                 </Header>
                 <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
                   {modal && <ExportInvoice onClose={() => setModal(false)} />}
