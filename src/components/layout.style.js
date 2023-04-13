@@ -32,7 +32,12 @@ padding-bottom: 80px;;
     ${props=> props.showTimeline && css`
     & .midpanel{
         grid-template-columns: auto 400px;
-        
+        @media screen and (max-width: 1440px){
+            grid-template-columns: auto 0;
+            ${Timeline}{
+                display: none;
+            }
+        }
         ${Timeline}{
             border-left: 1px solid ${Theme.primary.colors.border};
         }

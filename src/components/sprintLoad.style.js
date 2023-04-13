@@ -6,6 +6,7 @@ export const SprintGroup = styled.div`
     border-radius: ${Theme.secondary.radius};
     border: 1px solid ${Theme.primary.colors.border};
     max-width: 800px;
+    width: 100%;
     overflow: hidden;
     margin: ${Theme.dimensions.x3} 0;
     box-shadow: 0 2px 15px rgba(0,0,0,0.05);
