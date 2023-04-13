@@ -117,7 +117,7 @@ function App() {
             <>
               <div className="mainpanel">
                 <Header>
-                  <Logo className="topbrand" />
+                  <Logo className="topbrand" wide/>
                   <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={invoice.customer ? false : true}>Rate Card</Button>
                   <GoogleProfile {...profile} logOut={logOut} />
                 </Header>
