@@ -23,9 +23,11 @@ export const Table = styled.div`
     & tbody{
         & tr{
             border-bottom: 1px solid ${Theme.primary.colors.border};
+            ${props => !props.noTile && css`
             &:nth-child(even){
                 background-color: ${transparentize(0.8, Theme.primary.colors.border)};
             }
+            `}
              & td{
                 padding: ${Theme.dimensions.x15};
                 &:last-child{
@@ -58,9 +60,10 @@ export const Table = styled.div`
     & tr:first-child{border-top: 2px solid ${darken(0.2, Theme.primary.colors.border)};}
     & tr{
        border-bottom: 1px dashed ${Theme.primary.colors.border};
+       
        &:nth-child(even){
         background-color: ${transparentize(1, Theme.primary.colors.border)};
-    }
+        }
     }
     & em{
         font-weight: 400;
@@ -140,3 +143,12 @@ export const AthlonSheet = styled.div`
     }
 }
 `;
+
+export const ExtraCostContainer = styled.div`
+    margin: ${Theme.dimensions.x2} 0;
+    border-radius: ${Theme.secondary.radius};
+    border: 1px solid ${Theme.primary.colors.border};
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    width: 800px;
+    overflow: hidden;
+`

@@ -68,6 +68,7 @@ export const projectTypes = [
 ];
 
 export const travelTypes = [
+  { label: 'None added', value: 'none' },
   { label: 'Per Sprint', value: 'sprint' },
   { label: 'Lump Sum', value: 'lumpsum' },
 ];
