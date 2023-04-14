@@ -100,7 +100,7 @@ export const ManageDiscounts = props => {
                                 <tr>
                                     <th style={{width: '150px'}}>Travel Cost</th>
                                     <th>Sprint Distribution</th>
-                                    <th></th>
+                                    <th style={{width: '56px'}}></th>
                                 </tr>
                             </thead>
                             <tbody>
