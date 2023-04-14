@@ -20,6 +20,7 @@ const SprintTable = () => {
         return lineRate[`${invoice.get.customer.type}_daily`];
     };
 
+
     const spreadSprint = () => {
         const { sprints, billrate, billcycle, date } = project;
         let sprintGroup = [];
@@ -37,10 +38,11 @@ const SprintTable = () => {
             const sprintDate = dayjs(date, 'DD/MM/YYYY').add(14 * i, 'day').format('DD/MM/YYYY');
             const discount = extracost.discount;
             const discountValue = extracost.discountValue;
+
             const travel = extracost.travel;
-            const travelCost = extracost.travel === 'sprint' ? extracost.travelCost : 0;
+            const travelCost = extracost.travel === 'sprint' && extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)).cost : 0;
             const research = extracost.research;
-            const researchCost = extracost.research === 'sprint' ? extracost.researchCost : 0;
+            const researchCost = extracost.research === 'sprint' && extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)).cost : 0;
             // const insurance = extracost.insurance;
 
             // console.log();
@@ -53,11 +55,11 @@ const SprintTable = () => {
             // get single sprint cost based on members
 
             getGroup(i+1)?.members.map((mem, inc)=> {
-                // console.log('sprint ', i+1, 'member: ', mem.role, 'cost: ',parseInt(getMemberCost(mem.role) *  mem.commitment || 0))
                 personnelCost += parseInt(getMemberCost(mem.role) *  mem.commitment || 0);
             })
             // COST AGGREGATION
             sprintCost = sprintCost + personnelCost;
+
             // if travel cost applies before discount
             if (travel === 'sprint' && discount === 'total') {
                 sprintCost = sprintCost + parseInt(travelCost);
@@ -68,12 +70,12 @@ const SprintTable = () => {
             sprintDiscounted = (sprintDiscount ? sprintCost * (discountValue) / 100 : 0);
             sprintCost = (sprintCost - sprintDiscounted);
 
-            // console.log(travel, research);
+
             // If travel and research is not affected by discount
-            if (travel === 'sprint' && discount === 'team') {
+            if (travel === 'sprint' && discount !== 'total') {
                 sprintCost = sprintCost + parseInt(travelCost);
             }
-            if (research === 'sprint' && discount === 'team') {
+            if (research === 'sprint' && discount !== 'total') {
                 sprintCost = sprintCost + parseInt(researchCost);
             }
 
