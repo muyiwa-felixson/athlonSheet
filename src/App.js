@@ -157,11 +157,15 @@ function App() {
                   )
                 }
               >
-                <LoginWrapper>
-                  <Logo className="brand" />
-                  <h2>Sign in with your athlon mail</h2>
+                <div className='left'><LoginWrapper>
+                  
+                  <Logo className="brand" wide />
+                  <h2>Sign in with your <br />Athlon mail</h2>
+                  <p className='info'>Athlon Sheet, an internal project for Athlon Studio © 2023</p>
                   <GoogleAuth />
-                </LoginWrapper>
+                  
+                </LoginWrapper></div>
+                  <div className='right'><div className='brandy' /><div className='content'></div></div>
               </Modal>
             </>
           )}

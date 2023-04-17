@@ -4,10 +4,13 @@ import Theme from "../utility/theme";
 import GoogleLogo from "../assets/google_logo.svg";
 import { useState } from "react";
 import { Bubble } from "./input.style";
+import { transparentize } from "polished";
+import Circler from '../assets/circles.svg';
+import BrandImage from '../assets/image.svg';
 
 
 const ModalWrap = styled.div`
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.02);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,15 +27,53 @@ const ModalWrap = styled.div`
 const LoginModal = styled.div`
     border-radius: ${Theme.secondary.radius};
     background: ${Theme.primary.colors.surface};
-    width: 60%;
-    max-width: 500px;
-    padding: ${Theme.dimensions.x5};
+    width: 80%;
+    max-width: 1000px;
+    
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    position: relative;
+    & .left{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: url(${Circler});
+        background-size: 600px;
+        background-position: -300px -300px;
+        background-repeat: no-repeat;
+        /* & .brand{
+            position: absolute;
+            top:  ${Theme.dimensions.x5};
+            left: ${Theme.dimensions.x5};
+        } */
+        & .info{
+            position: absolute;
+            bottom:  ${Theme.dimensions.x3};
+            left: ${Theme.dimensions.x0};
+            text-align: center;
+            width: 60%;
+            opacity:0.8;
+        }
+    }
+    & .right{
+        background-color: ${ transparentize(0.5, Theme.primary.colors.border)};
+        & .brandy{
+            height: 600px;
+            background-image: url(${BrandImage});
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
 `;
 
 export const LoginWrapper = styled.div`
     text-align: center;
+    padding: ${Theme.dimensions.x10} ${Theme.dimensions.x5};
     & svg.brand {
         height: ${Theme.dimensions.x6};
+        margin-bottom: ${Theme.dimensions.x};
     }
 `
 

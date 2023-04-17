@@ -8,12 +8,13 @@ export const Warning = styled.div`
     border: 1px solid ${props=> transparentize(0.8,props.color ? props.color : Theme.primary.colors.google)};
     background: ${props=> transparentize(0.9,props.color ? props.color : Theme.primary.colors.google)};
     border-radius: ${Theme.primary.radius};
-    display: grid;
+    display: inline-grid;
     grid-template-columns: auto max-content;
     padding: ${Theme.dimensions.x2};
     align-items: center;
     color: ${props=> darken(0.1, props.color ? props.color : Theme.primary.colors.google)};
-    width: 60%;
-    max-width: 500px;
+    width: 80%;
+    max-width: 1000px;
+    text-align: center;
     margin: ${Theme.dimensions.x2} 0;
 `;
