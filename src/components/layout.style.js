@@ -51,6 +51,15 @@ padding-bottom: 80px;
             margin-bottom: 0!important;
         }
     }
+    & .ant-btn-lg{
+        align-items: center;
+        display: inline-grid;
+        grid-template-columns: max-content auto;
+        & svg{
+            display: inline-block;
+            margin-right: ${Theme.dimensions.x1};
+        }
+    }
 `;
 
 export const Timeline = styled.div`

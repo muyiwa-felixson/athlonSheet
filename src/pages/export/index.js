@@ -9,9 +9,10 @@ import SprintTable from "../sprint";
 import { Empty, Space, Button, Dropdown } from "antd";
 import { Box, Grid } from "../../components/layout.style";
 import Logo from "../../assets/logo";
-import { FiDownload, FiPrinter } from "react-icons/fi";
+import { FiColumns, FiDownload, FiFile, FiFileText, FiPrinter, FiSave } from "react-icons/fi";
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { DropLine } from "../../components/input.style";
 
 const ExportInvoice = props => {
     const UserData = useContext(UserContext);
@@ -56,7 +57,7 @@ const ExportInvoice = props => {
     }
 
     const items = [{
-        key: '1', label: (<span onClick={handleDownloadPdf}>Download PDF</span>)
+        key: '1', label: (<DropLine><FiFile /><span onClick={handleDownloadPdf}>Download PDF</span></DropLine>)
     },
     {
         key: '2', label: (<DownloadTableExcel
@@ -64,8 +65,8 @@ const ExportInvoice = props => {
             sheet="Invoice"
             currentTableRef={dataTable.current}
         >
-            <span> Download Excel </span></DownloadTableExcel>)
-    }, { key: '1', label: (<span onClick={handleFileDownload}>Download Invoice File</span>) }];
+            <DropLine><FiColumns /><span> Download Excel </span></DropLine></DownloadTableExcel>)
+    }, { key: '3', label: (<DropLine highlight><FiSave /><span onClick={handleFileDownload}>Download Invoice File</span></DropLine>) }];
     return <>
         <div style={{ display: 'none' }} ><SprintTable /></div>
         <SheetHeader>

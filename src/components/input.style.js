@@ -152,3 +152,14 @@ export const TableInput = styled.input`
         /* font-weight: 600; */
     `}
 `;
+
+export const DropLine = styled.div`
+    display: grid;
+    align-items: center;
+    grid-template-columns: max-content auto;
+    grid-gap: ${Theme.dimensions.x1};
+    padding: ${Theme.dimensions.x05} 0;
+    ${props=> props.highlight && css`
+    color: ${Theme.primary.colors.google};
+    `}
+`; 

@@ -19,6 +19,7 @@ import Theme from './utility/theme';
 import ExportInvoice from './pages/export';
 import RateTab from './pages/rates/ratecard';
 import { Importer } from './pages/import';
+import { FiBold, FiDollarSign, FiPlay, FiRefreshCcw } from 'react-icons/fi';
 
 export const UserContext = React.createContext();
 
@@ -121,8 +122,8 @@ function App() {
               <div className="mainpanel">
                 <Header>
                   <div className='cage'>
-                  <Logo className="topbrand" wide/>
-                  <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true}>Rate Card</Button>
+                  <Logo className="topbrand" wide='true' />
+                  <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true} icon={<FiDollarSign />}>Rate Card</Button>
                   <GoogleProfile {...profile} logOut={logOut} />
                   </div>
                 </Header>
@@ -135,8 +136,8 @@ function App() {
                 <Header foot>
                 <div className='cage'>
                   <div><Importer /></div>
-                <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()}>Reset Sheet</Button>
-                  <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true}>Generate Invoice</Button>
+                <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()} icon={<FiRefreshCcw />}>Reset Sheet</Button>
+                  <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true} icon={<FiPlay />}>Generate Invoice</Button>
                 </div>
                 </Header>
                 <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
