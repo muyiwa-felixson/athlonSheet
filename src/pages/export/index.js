@@ -44,7 +44,7 @@ const ExportInvoice = props => {
     };
 
     const handleFileDownload = () => {
-        const jsonData = UserData.invoice.get;
+        const jsonData = { invoice: UserData.invoice.get, rateCard: UserData.data?.rateCard.get};
         const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');

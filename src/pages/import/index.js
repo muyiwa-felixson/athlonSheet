@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react"
+import { useContext } from "react"
 import { UserContext } from "../../App";
 import Cookies from 'js-cookie';
 import styled from "styled-components";
@@ -40,12 +40,14 @@ export const Importer = () => {
         const reader = new FileReader();
     
         reader.onload = (event) => {
-          const content = decodeURIComponent(event.target.result);
+          const content = event.target.result;
           const parsedData = JSON.parse(content);
     
           // Update the cookie with the parsed data
-          Cookies.set("invoice", content, { expires: 3 });
-          UserData.invoice?.set(parsedData);
+          Cookies.set("invoice", JSON.stringify(parsedData.invoice, { expires: 3 }));
+          Cookies.set("sheetRates", JSON.stringify(parsedData.rateCard, { expires: 3 }));
+          UserData.invoice?.set(parsedData.invoice);
+          UserData.data?.rateCard?.set(parsedData.rateCard);
           window.location.reload(false);
         };
     
