@@ -18,6 +18,7 @@ import SprintSheet from './pages/sprint/sprintTimeline';
 import Theme from './utility/theme';
 import ExportInvoice from './pages/export';
 import RateTab from './pages/rates/ratecard';
+import { Importer } from './pages/import';
 
 export const UserContext = React.createContext();
 
@@ -64,6 +65,8 @@ function App() {
       // console.log('Component unmounted');
     };
   }, []);
+
+
 
   // Fetch sheet members and rate cards
   const getFullSheetData = () => {
@@ -131,7 +134,7 @@ function App() {
                 </div>
                 <Header foot>
                 <div className='cage'>
-                  <div/>
+                  <div><Importer /></div>
                 <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()}>Reset Sheet</Button>
                   <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true}>Generate Invoice</Button>
                 </div>
