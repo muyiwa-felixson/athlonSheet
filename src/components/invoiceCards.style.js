@@ -80,3 +80,9 @@ export const MemberGrid = styled.div`
     border-bottom: 1px solid ${Theme.primary.colors.border};
     padding-bottom:  ${Theme.dimensions.x1};
 `;
+
+export const Symbol = styled.span`
+    display: inline-block;
+    font-size: 0.6rem;
+    padding-right: 4px;
+`;

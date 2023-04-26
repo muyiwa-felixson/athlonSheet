@@ -91,3 +91,19 @@ export const dateFormat = 'DD/MM/YYYY';
 export const range = (start, end) => {
   return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
+
+export const currencies = [
+  {label: 'Australian Dollar (AUD)', value: 'USDAUD'},
+  {label: 'British Pound (GBP)', value: 'USDGBP'},
+  {label: 'Canadian Dollar (CAD)', value: 'USDCAD'},
+  {label: 'New Zealand Dollar (NZD)', value: 'USDNZD'},
+  {label: 'United States Dollar (USD)', value: 'USDUSD'},
+];
+
+export const currencySYmbols = {
+USDUSD:  '$',
+USDGBP: '£',
+USDCAD: 'C$',
+USDNZD: '$NZ',
+USDAUD: 'A$'
+}
