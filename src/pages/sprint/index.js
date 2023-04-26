@@ -7,6 +7,11 @@ const SprintTable = () => {
     const { invoice, data, sheet, excluded } = useContext(UserContext);
     const loading = invoice?.get.loading;
 
+    const currency = invoice.get.project.useCurrency ? invoice.get.project.useCurrency : 'USDUSD';
+    const shortCurrency = currency.slice(3);
+    const currencyData = invoice?.get.project.currencyData?.quotes ? invoice?.get.project.currencyData?.quotes : [];
+    const currencyRate = currency !== 'USDUSD' ? currencyData.find(e=> e.currency === currency).value : 1;
+
     const getGroup = (sprint) => {
         return loading.find(group => group.to >= sprint) || null;
     }
@@ -40,9 +45,9 @@ const SprintTable = () => {
             const discountValue = extracost.discountValue;
 
             const travel = extracost.travel;
-            const travelCost = extracost.travel === 'sprint' && extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)).cost : 0;
+            const travelCost = extracost.travel === 'sprint' && extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)).cost * currencyRate : 0;
             const research = extracost.research;
-            const researchCost = extracost.research === 'sprint' && extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)).cost : 0;
+            const researchCost = extracost.research === 'sprint' && extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)).cost * currencyRate : 0;
             // const insurance = extracost.insurance;
 
             // console.log();
@@ -55,17 +60,17 @@ const SprintTable = () => {
             // get single sprint cost based on members
 
             getGroup(i+1)?.members.map((mem, inc)=> {
-                personnelCost += parseInt(getMemberCost(mem.role) *  mem.commitment || 0);
+                personnelCost += parseInt(getMemberCost(mem.role) *  mem.commitment || 0) * currencyRate;
             })
             // COST AGGREGATION
             sprintCost = sprintCost + personnelCost;
 
             // if travel cost applies before discount
             if (travel === 'sprint' && discount === 'total') {
-                sprintCost = sprintCost + parseInt(travelCost);
+                sprintCost = sprintCost + parseFloat(travelCost);
             }
             if (research === 'sprint' && discount === 'total') {
-                sprintCost = sprintCost + parseInt(researchCost);
+                sprintCost = sprintCost + parseFloat(researchCost);
             }
             sprintDiscounted = (sprintDiscount ? sprintCost * (discountValue) / 100 : 0);
             sprintCost = (sprintCost - sprintDiscounted);
@@ -73,18 +78,18 @@ const SprintTable = () => {
 
             // If travel and research is not affected by discount
             if (travel === 'sprint' && discount !== 'total') {
-                sprintCost = sprintCost + parseInt(travelCost);
+                sprintCost = sprintCost + parseFloat(travelCost);
             }
             if (research === 'sprint' && discount !== 'total') {
-                sprintCost = sprintCost + parseInt(researchCost);
+                sprintCost = sprintCost + parseFloat(researchCost);
             }
 
             // group total including discounts
             groupTotal = groupTotal + sprintCost;
             // Group total without discounts
             groupCost = groupCost + personnelCost;
-            groupTravel += parseInt(travelCost);
-            groupResearch += parseInt(researchCost);
+            groupTravel += parseFloat(travelCost);
+            groupResearch += parseFloat(researchCost);
 
             // Project Total with discount and with out
             projectTotal = projectTotal + groupTotal;

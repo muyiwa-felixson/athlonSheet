@@ -3,6 +3,7 @@ import axios from 'axios';
 const apiKey = process.env.REACT_APP_GOOGLE_API_KEY; // Replace with your API key
 const sheetId = process.env.REACT_APP_SHEET_ID; // Replace with your sheet ID
 const sheetName = "Members"; // Replace with your sheet name
+const apiLayerKey = process.env.REACT_APP_APILAYER_KEY;
 
 
 
@@ -42,5 +43,22 @@ export const fetchRateData = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching data from Google Sheets:", error);
+  }
+};
+
+export const fetchCurrencyConversion = async () => {
+  try {
+    const response = await axios.get(
+      `https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP`, {
+        headers: {
+          apikey: apiLayerKey
+        }
+      }
+    );
+
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.error("Error fetching data from ApiLayer:", error);
   }
 };

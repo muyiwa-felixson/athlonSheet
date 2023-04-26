@@ -13,6 +13,7 @@ import { FiColumns, FiDownload, FiFile, FiFileText, FiPrinter, FiSave } from "re
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { DropLine } from "../../components/input.style";
+import { currencies, currencySYmbols } from "../../utility/util";
 
 const ExportInvoice = props => {
     const UserData = useContext(UserContext);
@@ -20,6 +21,11 @@ const ExportInvoice = props => {
     const extracost = UserData.invoice.get.extracost ? UserData.invoice.get.extracost : null;
     const printable = useRef();
     const dataTable = useRef(null);
+
+    const currency = UserData.invoice.get.project.useCurrency ? UserData.invoice.get.project.useCurrency : 'USDUSD';
+    const shortCurrency = currency.slice(3);
+    const currencyData = UserData.invoice?.get.project.currencyData?.quotes ? UserData.invoice?.get.project.currencyData?.quotes : [];
+    const currencyRate = currencyData.find(e=> e.currency === currency) ? currencyData.find(e=> e.currency === currency).value : 1;
 
     let total = {
         cost: 0,
@@ -105,6 +111,7 @@ const ExportInvoice = props => {
                         <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
                             <span>Date Created: </span><strong>{dayjs(dayjs(), 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
                             <span>Created By: </span><div><strong>{UserData.profile?.get.name}</strong></div>
+                            <span>Currency: </span><div><strong>{currencies.find(e=> e.value === currency).label}</strong></div>
                         </Grid>
                     </Grid>
                 </Box>
@@ -127,31 +134,31 @@ const ExportInvoice = props => {
                         {
                             UserData.sheet.get.map((group) => group.map((elem, index) => {
                                 if (elem.type === 'invoice') {
-                                    total.personnel += parseInt(elem.cost);
-                                    total.cost += parseInt(elem.total);
-                                    total.discount += parseInt(elem.discount);
-                                    total.travel += elem.travel;
-                                    total.research += elem.research;
+                                    total.personnel += parseFloat(elem.cost);
+                                    total.cost += parseFloat(elem.total);
+                                    total.discount += parseFloat(elem.discount);
+                                    total.travel += parseFloat(elem.travel);
+                                    total.research += parseFloat(elem.research);
                                 }
 
                                 const Row = elem.type === 'invoice' ? <tr className="invoiceRow" key={`sheet_${elem.type}_${index}`}>
                                     <td>{dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</td>
                                     <td colSpan={2}>INVOICE</td>
-                                    <td className="alignR">{elem.cost}</td>
-                                    <td className="alignR">{elem.travel}</td>
-                                    <td className="alignR">{elem.research}</td>
-                                    <td colSpan={2} className="alignR">{elem.discount ? `-` : ''}{elem.discount}</td>
-                                    <td className="alignR"><strong>${new Intl.NumberFormat().format(elem.total)}</strong></td>
+                                    <td className="alignR">{elem.cost.toFixed(2)}</td>
+                                    <td className="alignR">{elem.travel.toFixed(2)}</td>
+                                    <td className="alignR">{elem.research.toFixed(2)}</td>
+                                    <td colSpan={2} className="alignR">{elem.discount ? `-` : ''}{elem.discount.toFixed(2)}</td>
+                                    <td className="alignR"><strong>{elem.total.toFixed(2)}</strong></td>
                                 </tr> : <tr key={`sheet_${elem.type}_${index}`}>
                                     <td>{elem.date}</td>
                                     <td>Sprint {elem.sprint}</td>
                                     <td>{elem.members?.length - elem.members?.filter((e, i) => excluded.get[`sprint_${elem.sprint}`] && excluded.get[`sprint_${elem.sprint}`][i] && !excluded.get[`sprint_${elem.sprint}`][i].active).length}</td>
-                                    <td className="alignR">{elem.personnel}</td>
-                                    <td className="alignR">{elem.travel}</td>
-                                    <td className="alignR">{elem.research}</td>
+                                    <td className="alignR">{elem.personnel.toFixed(2)}</td>
+                                    <td className="alignR">{elem.travel.toFixed(2)}</td>
+                                    <td className="alignR">{elem.research.toFixed(2)}</td>
                                     <td className="alignR">{elem.discount}%</td>
-                                    <td className="alignR">{elem.discountValue ? `-` : ''}{elem.discountValue}</td>
-                                    <td className="alignR"><strong>${new Intl.NumberFormat().format(elem.cost)}</strong></td>
+                                    <td className="alignR">{elem.discountValue ? `-` : ''}{elem.discountValue.toFixed(2)}</td>
+                                    <td className="alignR"><strong>{elem.cost.toFixed(2)}</strong></td>
                                 </tr>;
                                 return Row;
                             })
@@ -161,39 +168,41 @@ const ExportInvoice = props => {
                     <tbody className="totalBody">
                         <tr>
                             <td colSpan={8} className="alignR"><em>Total Personnel Cost</em></td>
-                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total.personnel)}</td>
+                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.personnel)}</td>
                         </tr>
                         <tr>
                             <td colSpan={8} className="alignR"><em>Travels</em></td>
-                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total.travel)}</td>
+                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.travel)}</td>
                         </tr>
                         <tr>
                             <td colSpan={8} className="alignR"><em>Research Incentives</em></td>
-                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total.research)}</td>
+                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.research)}</td>
                         </tr>
                         <tr>
                             <td colSpan={8} className="alignR"><em>Discount</em></td>
-                            <td className="alignR">-{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total.discount)}</td>
+                            <td className="alignR">-{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.discount)}</td>
                         </tr>
                         {
                             extracost?.insurance && <>
                                 <tr>
                                     <td colSpan={8} className="alignR"><strong>TOTAL</strong></td>
-                                    <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total.cost)}</strong></td>
+                                    <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost)}</strong></td>
                                 </tr>
                                 <tr>
                                     <td colSpan={8} className="alignR"><em>Payment Insurance (5% of total)</em></td>
-                                    <td className="alignR"><em>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total.cost * 5 / 100)}</em></td>
+                                    <td className="alignR"><em>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}</em></td>
                                 </tr>
                             </>
                         }
                         <tr className="totalRow">
                             <td colSpan={8} className="alignR"><strong>NET TOTAL</strong></td>
-                            <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}</strong></td>
+                            <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}</strong></td>
                         </tr>
                     </tbody>
                 </table></Table> : <Box pad={['x4']}><Empty description={<p><strong>No Data</strong><br />Please provide complete information for invoice fields</p>} /></Box>
                 }
+                <br/>
+                { UserData.invoice?.get.project.useCurrency !== 'USDUSD' && <em>(As on {dayjs.unix(UserData.invoice?.get.project.currencyData?.timestamp).format('H:mm Do MMMM')})  1 USD = {currencyRate} {currencies.find(e=> e.value === currency).label}</em>}
             </Box>
         </AthlonSheet>
     </>

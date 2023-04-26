@@ -111,7 +111,7 @@ function App() {
         invoice: { get: invoice, set: setInvoice },
         timeline: { get: showTimeline, set: setShowTimeline },
         sheet: { get: sheet, set: setSheet },
-        excluded: { get: excluded, set: setExcluded }
+        excluded: { get: excluded, set: setExcluded },
       }}
     >
       {sheetDomains ? (
