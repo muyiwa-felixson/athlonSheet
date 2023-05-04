@@ -5,7 +5,7 @@ import {  sprintDuration } from '../../utility/util';
 
 const SprintTable = () => {
     const { invoice, data, sheet, excluded } = useContext(UserContext);
-    const loading = invoice?.get.loading;
+    const loading = invoice?.get.loading ? invoice?.get.loading : [];
 
     const currency = invoice.get.project.useCurrency ? invoice.get.project.useCurrency : 'USDUSD';
     const shortCurrency = currency.slice(3);
@@ -61,7 +61,7 @@ const SprintTable = () => {
 
             getGroup(i+1)?.members.map((mem, inc)=> {
                 personnelCost += parseInt(getMemberCost(mem.role) *  mem.commitment || 0) * currencyRate;
-                console.log("Personnel Cost:", personnelCost);
+                // console.log("Personnel Cost:", personnelCost);
             })
             // COST AGGREGATION
             sprintCost = sprintCost + personnelCost;

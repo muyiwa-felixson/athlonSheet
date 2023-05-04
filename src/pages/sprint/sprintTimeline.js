@@ -3,7 +3,6 @@ import { UserContext } from '../../App';
 import { Timeline, Tag } from 'antd';
 import { Box } from '../../components/layout.style';
 import { TimeZone } from '../../components/caterpillar.style';
-import { Header } from '../../components/header.style';
 import dayjs from 'dayjs';
 import { colorFromNumber, sprintDuration } from '../../utility/util';
 import { SprintContainer } from '../../components/sprintLoad.style';

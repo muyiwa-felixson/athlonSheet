@@ -79,7 +79,7 @@ export const ManageProject = () => {
                         {projectTypes.map((e, i) => <Box key={`project_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                     </Radio.Group>
                 </Box>
-                {project.type !== 'fixed' && <>
+                {project.type === 'sprint' && <>
                 <Box>
                     <Label>Number of Sprints</Label>
                     <div><InputNumber min={1} max={100} defaultValue={project.sprints} onChange={e => changeValue({ target: { value: e } }, 'sprints')} /></div>

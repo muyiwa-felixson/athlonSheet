@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Cookies from 'js-cookie';
 import './assets/fonts/font.css';
-import { Button, Modal as AntModal } from 'antd';
+import { Button, notification, Modal as AntModal, Alert, Space } from 'antd';
 import { googleLogout } from '@react-oauth/google';
 import { GoogleProfile, LoginWrapper, Modal } from './components/login.style';
 import Logo from './assets/logo';
@@ -92,6 +92,46 @@ function App() {
     }
   };
 
+  const nofityRequired = () => {
+    let errors = []
+    if (!invoice.customer?.name) {
+      errors.push({ type: "error", message: <span>We need to start with a <strong>"Customer Name"</strong></span> });
+    }
+
+    if (invoice.project) {
+      if (invoice.project.type === "sprint") {
+        (invoice.project.sprints < 1) && errors.push({ type: "error", message: <span>What are we doing here? <stong>No Sprints?</stong></span> });
+        (invoice.loading.length < 1 || invoice.loading?.filter(e => e.to === invoice.project.sprints).length < 1) && errors.push({ type: "warning", message: <span>Wait a minute! did your sprint loads cover all the sprints?</span> });
+        (invoice.loading.length > 0 && invoice.loading?.filter(e => e.members.length === 0).length > 0) && errors.push({ type: "warning", message: <span>Except you don't like getting paid, some sprint load have no members</span> });
+      }
+
+      if (invoice.project.type === "fixed") {
+        (invoice.project.sprints < 1) && errors.push({ type: "error", message: <span>What are we doing here? <stong>No Sprints?</stong></span> });
+        // (invoice.phases.length < 1 || invoice.phases?.filter(e => e.to === invoice.project.sprints).length < 1) && errors.push({ type: "warning", message: <span>Wait a minute! did your sprint loads cover all the sprints?</span> });
+        (invoice.phases.length > 0 && invoice.phases?.filter(e => e.members.length === 0).length > 0) && errors.push({ type: "warning", message: <span>Except you don't like getting paid, some <strong>project phases have no members</strong></span> });
+      }
+    } else {
+      errors.push({ type: "error", message: <span>Have you considered having a <strong>"Project Name"</strong>?</span> });
+    }
+
+    if (errors.filter(e => e.type === 'error').length > 0) {
+      notification.open({
+        message: 'Incomplete Fields',
+        description: <Space direction="vertical">{errors.filter(e => e.type === 'error').map(e => <Alert showIcon {...e} />)}</Space>,
+        duration: 0,
+      });
+    } else {
+      setModal(true);
+    }
+
+    if (errors.filter(e => e.type === 'warning').length > 0) {
+      notification.open({
+        message: 'Warnings!',
+        description: <Space direction="vertical">{errors.filter(e => e.type === 'warning').map(e => <Alert showIcon {...e} />)}</Space>,
+      });
+    }
+  }
+
   const reset = () => {
     Cookies.remove('invoice');
     Cookies.remove('data');
@@ -125,34 +165,33 @@ function App() {
               <div className="mainpanel">
                 <Header>
                   <div className='cage'>
-                  <Logo className="topbrand" wide='true' />
-                  <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true} icon={<FiDollarSign />}>Rate Card</Button>
-                  <GoogleProfile {...profile} logOut={logOut} />
+                    <Logo className="topbrand" wide='true' />
+                    <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true} icon={<FiDollarSign />}>Rate Card</Button>
+                    <GoogleProfile {...profile} logOut={logOut} />
                   </div>
                 </Header>
                 <div className='midpanel'>
                   <Invoice />
-                  {(modal && invoice?.project && invoice.project.type === 'sprint') && <Timeline>
-                    <SprintSheet />
-                  </Timeline> }
+
+                  {invoice?.project && <Box invisible> {invoice.project.type === 'fixed' && invoice.phases && <FlatBillTable />} {invoice.project.type === 'sprint' && invoice.loading && <SprintTable />}</Box>}
+                  {/* <Timeline><SprintSheet /></Timeline> */}
+                  {(invoice?.project && invoice.project.type === 'sprint') && <Timeline><SprintSheet /></Timeline>}
                 </div>
                 <Header foot>
-                <div className='cage'>
-                  <div><Importer /> 
-                  { invoice?.project && <Box invisible> { invoice.project.type === 'fixed' && invoice.project.phases && <FlatBillTable /> }
-                  { invoice.project.type === 'sprint' && invoice.project.sprints && <SprintTable /> }</Box>}
-                </div>
-                <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()} icon={<FiRefreshCcw />}>Reset Sheet</Button>
-               
-                  <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true} icon={<FiPlay />}>Generate Invoice</Button>
-                </div>
+                  <div className='cage'>
+                    <div><Importer /></div>
+
+                    <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()} icon={<FiRefreshCcw />}>Reset Sheet</Button>
+
+                    <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => nofityRequired()} disabled={invoice.customer ? false : true} icon={<FiPlay />}>Generate Invoice</Button>
+                  </div>
                 </Header>
                 <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
                   {(modal && invoice.project && invoice.project.type === 'sprint') && <ExportInvoice onClose={() => setModal(false)} />}
 
                   {(modal && invoice.project && invoice.project.type === 'fixed') && <ExportFlatBillInvoice onClose={() => setModal(false)} />}
                 </AntModal>
-                <AntModal title={null} open={rateModal} footer={null} closable={true} onCancel={()=> setRateModal(false)} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
+                <AntModal title={null} open={rateModal} footer={null} closable={true} onCancel={() => setRateModal(false)} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
                   {rateModal && <RateTab />}
                 </AntModal>
               </div>
@@ -170,14 +209,14 @@ function App() {
                 }
               >
                 <div className='left'><LoginWrapper>
-                  
+
                   <Logo className="brand" wide />
                   <h2>Sign in with your <br />Athlon mail</h2>
                   <p className='info'>Athlon Sheet, an internal project for Athlon Studio © 2023</p>
                   <GoogleAuth />
-                  
+
                 </LoginWrapper></div>
-                  <div className='right'><div className='brandy' /><div className='content'></div></div>
+                <div className='right'><div className='brandy' /><div className='content'></div></div>
               </Modal>
             </>
           )}

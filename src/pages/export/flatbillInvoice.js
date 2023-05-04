@@ -117,6 +117,7 @@ const ExportFlatBillInvoice = props => {
                     </Grid>
                 </Box>
                 }
+                {/* {console.log(UserData.sheet.get)} */}
                 {UserData.sheet?.get.length > 0 ? <Table><table ref={dataTable}>
                     <thead>
                         <tr>

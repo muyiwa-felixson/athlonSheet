@@ -21,7 +21,6 @@ export const ManageFlatBillingMembers = () => {
   const roles = UserData.data.rateCard.get?.map((elem, index) => {
     return { value: elem.role, label: `${elem.role} | ${elem.group}` }
   })
-  const projectSprints = UserData.invoice?.get?.project?.sprints;
 
   const addGroup = () => {
       const newGroup = {
