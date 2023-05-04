@@ -4,20 +4,23 @@ import { Input, Radio, InputNumber, Switch, Button, Space, Select } from 'antd';
 import Cookies from "js-cookie";
 import { Box, Grid, Label } from '../../components/layout.style';
 import Theme from '../../utility/theme';
-import { discountTypes, range, travelTypes } from '../../utility/util';
+import { discountTypes, phaseTravelTypes, range, travelTypes } from '../../utility/util';
 import { FiTrash } from 'react-icons/fi';
 import { ExtraCostContainer, Table } from '../../components/table.style';
 
 export const ManageDiscounts = props => {
     const UserData = React.useContext(UserContext);
+    const phases = UserData.invoice?.get.phases ? UserData.invoice?.get.phases : [];
     const [extracost, setExtracost] = useState(UserData.invoice?.get.extracost ? UserData.invoice.get.extracost : {
         discount: false,
         discountValue: 5,
         travel: 'sprint',
         travelCost: 0,
         travelCosts: [{ cost: 0, sprints: [] }],
+        phaseTravelCosts: [{ cost: 0, sprints: [] }],
         research: 'sprint',
         researchCosts: [{ cost: 0, sprints: [] }],
+        phaseResearchCosts: [{ cost: 0, sprints: [] }],
         researchCost: 0,
         insurance: false,
     });
@@ -39,9 +42,19 @@ export const ManageDiscounts = props => {
             newExtracost[type] = newExtracost[type].map((e, w) => {
                 return { ...e, sprints: w === i ? vari : arraySub(e.sprints, vari) };
             })
+        } else if (key === 'phases') {
+            if (e.includes('all')) {
+                vari = phases.map(e => `${e.name}`);
+            }
+            newExtracost[type][i][key] = vari.map(e => `${e}`);
+
+            newExtracost[type] = newExtracost[type].map((e, w) => {
+                return { ...e, phases: w === i ? vari : arraySub(e.phases, vari) };
+            })
         } else {
             newExtracost[type][i][key] = vari;
         }
+        // console.log("My current Costing", newExtracost);
         setExtracost(newExtracost);
     }
 
@@ -69,6 +82,19 @@ export const ManageDiscounts = props => {
             return { label: `Sprint ${e}`, value: `${e}` }
         });
     }
+
+    const filteredPhaseOptions = (type) => {
+        let initRange = phases;
+        // extracost[type] && extracost[type].map(e => {
+        //     initRange = e.phases ? arraySub(initRange, e.phases) : initRange;
+        // })
+        // console.log("initial range",initRange);
+        return initRange.map(e => {
+            return { label: `${e.name}`, value: `${e.name}` }
+        });
+    }
+
+    const realTravelTypes = (UserData.invoice?.get.project && UserData.invoice.get.project.type === 'fixed') ? phaseTravelTypes : travelTypes;
     // console.log(filteredSprintOptions(), extracost.travelCosts)
     useEffect(() => {
         const newInvoice = { ...UserData.invoice.get, extracost: extracost };
@@ -84,7 +110,7 @@ export const ManageDiscounts = props => {
                     <Box>
                         <Label>How would you like to handle Travel costs?</Label>
                         <Radio.Group value={extracost.travel} onChange={e => changeValue(e, 'travel')}>
-                            {travelTypes.map((e, i) => <Box key={`travel_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
+                            {realTravelTypes.map((e, i) => <Box key={`travel_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                         </Radio.Group>
                     </Box>
                     {extracost.travel === 'lumpsum' && <Box>
@@ -94,13 +120,13 @@ export const ManageDiscounts = props => {
                             <Button onClick={() => changeValue({ target: { value: 0 } }, 'travelCost')}>Clear</Button>
                         </Space>
                     </Box>}
-                    {extracost.travel === 'sprint' && <><ExtraCostContainer><Table minified noTile>
+                    {(extracost.travel === 'sprint' && UserData.invoice?.get.project && UserData.invoice.get.project.type === 'sprint') && <><ExtraCostContainer><Table minified noTile>
                         <table>
                             <thead>
                                 <tr>
-                                    <th style={{width: '150px'}}>Travel Cost</th>
+                                    <th style={{ width: '150px' }}>Travel Cost</th>
                                     <th>Sprint Distribution</th>
-                                    <th style={{width: '56px'}}></th>
+                                    <th style={{ width: '56px' }}></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -130,8 +156,47 @@ export const ManageDiscounts = props => {
                                         <td>{i > 0 && <Button onClick={() => { deleteDistribution(i, 'travelCosts') }} icon={<FiTrash />} />}</td>
                                     </tr>)}
                             </tbody></table></Table></ExtraCostContainer>
-                                <Button type="primary" ghost disabled={!filteredSprintOptions('travelCosts').length > 0} style={{ borderRadius: Theme.primary.radius }} size="medium" onClick={() => addNewDistribution('travelCosts')}>New Distribution</Button>
-                            </>}
+                        <Button type="primary" ghost disabled={!filteredSprintOptions('travelCosts').length > 0} style={{ borderRadius: Theme.primary.radius }} size="medium" onClick={() => addNewDistribution('travelCosts')}>New Distribution</Button>
+                    </>}
+
+                    {(extracost.travel === 'sprint' && UserData.invoice?.get.project && UserData.invoice.get.project.type === 'fixed') && <><ExtraCostContainer><Table minified noTile>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '150px' }}>Travel Cost</th>
+                                    <th>Phase Distribution</th>
+                                    <th style={{ width: '56px' }}></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {extracost.phaseTravelCosts && extracost.phaseTravelCosts.map((e, i) =>
+                                    <tr key={`travel_cost_${i}`}>
+                                        <td>
+                                            <Input
+                                                style={{ width: "100%" }}
+                                                defaultValue={e.cost}
+                                                value={e.cost}
+                                                onChange={(e) => changeValueMultiple(e.target.value, i, 'cost', 'phaseTravelCosts')}
+                                                placeholder="ex. 10000"
+                                            />
+                                        </td>
+                                        <td>
+                                            <Select
+                                                style={{ minWidth: "100%" }}
+                                                defaultValue={e.phases}
+                                                value={e.phases ? e.phases : []}
+                                                mode="multiple"
+                                                placeholder="Select Phases"
+                                                allowClear
+                                                options={i === 0 ? [{ label: 'All Phases', value: 'all' }, ...filteredPhaseOptions('phaseTravelCosts')] : filteredPhaseOptions('phaseTravelCosts')}
+                                                onChange={e => changeValueMultiple(e, i, 'phases', 'phaseTravelCosts')}
+                                            />
+                                        </td>
+                                        <td>{i > 0 && <Button onClick={() => { deleteDistribution(i, 'phaseTravelCosts') }} icon={<FiTrash />} />}</td>
+                                    </tr>)}
+                            </tbody></table></Table></ExtraCostContainer>
+                        <Button type="primary" ghost disabled={!filteredPhaseOptions('phaseTravelCosts').length > 0} style={{ borderRadius: Theme.primary.radius }} size="medium" onClick={() => addNewDistribution('phaseTravelCosts')}>New Distribution</Button>
+                    </>}
                 </Box>
 
             </Box>
@@ -143,7 +208,7 @@ export const ManageDiscounts = props => {
                     <Box>
                         <Label>How would you like to handle Research costs?</Label>
                         <Radio.Group value={extracost.research} onChange={e => changeValue(e, 'research')}>
-                            {travelTypes.map((e, i) => <Box key={`research_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
+                            {realTravelTypes.map((e, i) => <Box key={`research_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                         </Radio.Group>
                     </Box>
                     {extracost.research === 'lumpsum' && <Box>
@@ -153,41 +218,80 @@ export const ManageDiscounts = props => {
                             <Button onClick={() => changeValue({ target: { value: 0 } }, 'researchCost')}>Clear</Button>
                         </Space>
                     </Box>}
-                    {extracost.research === 'sprint' && <><ExtraCostContainer><Table minified noTile>
+                    {(extracost.research === 'sprint' && UserData.invoice?.get.project && UserData.invoice.get.project.type === 'sprint') && <><ExtraCostContainer><Table minified noTile>
                         <table>
                             <thead>
                                 <tr>
-                                    <th style={{width: '150px'}}>Research Cost</th>
+                                    <th style={{ width: '150px' }}>Research Cost</th>
                                     <th>Sprint Distribution</th>
-                                    <th style={{width: '56px'}}></th>
+                                    <th style={{ width: '56px' }}></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {extracost.researchCosts && extracost.researchCosts.map((e, i) => <tr key={`travel_cost_${i}`}>
                                     <td> <Input
-                                            style={{ width: "100%" }}
-                                            value={e.cost}
-                                            defaultValue={e.cost}
-                                            onChange={(e) => changeValueMultiple(e.target.value, i, 'cost', 'researchCosts')}
-                                            placeholder="ex. 10000"
-                                        /></td>
+                                        style={{ width: "100%" }}
+                                        value={e.cost}
+                                        defaultValue={e.cost}
+                                        onChange={(e) => changeValueMultiple(e.target.value, i, 'cost', 'researchCosts')}
+                                        placeholder="ex. 10000"
+                                    /></td>
                                     <td> <Select
-                                            style={{ minWidth: "100%" }}
-                                            defaultValue={e.sprints}
-                                            value={e.sprints ? e.sprints : []}
-                                            mode="multiple"
-                                            placeholder="Select Sprints"
-                                            allowClear
-                                            options={i === 0 ? [{ label: 'All Sprints', value: 'all' }, ...filteredSprintOptions('researchCosts')] : filteredSprintOptions('researchCosts')}
-                                            onChange={e => changeValueMultiple(e, i, 'sprints', 'researchCosts')}
-                                        />
+                                        style={{ minWidth: "100%" }}
+                                        defaultValue={e.sprints}
+                                        value={e.sprints ? e.sprints : []}
+                                        mode="multiple"
+                                        placeholder="Select Sprints"
+                                        allowClear
+                                        options={i === 0 ? [{ label: 'All Sprints', value: 'all' }, ...filteredSprintOptions('researchCosts')] : filteredSprintOptions('researchCosts')}
+                                        onChange={e => changeValueMultiple(e, i, 'sprints', 'researchCosts')}
+                                    />
                                     </td>
                                     <td>{i > 0 && <Button onClick={() => { deleteDistribution(i, 'researchCosts') }} icon={<FiTrash />} />}</td>
                                 </tr>)}
                             </tbody></table></Table></ExtraCostContainer>
-                                <Button type="primary" ghost disabled={!filteredSprintOptions('researchCosts').length > 0} style={{ borderRadius: Theme.primary.radius }} size="medium" onClick={() => addNewDistribution('researchCosts')}>New Distribution</Button>
-</> 
-                            }
+                        <Button type="primary" ghost disabled={!filteredSprintOptions('researchCosts').length > 0} style={{ borderRadius: Theme.primary.radius }} size="medium" onClick={() => addNewDistribution('researchCosts')}>New Distribution</Button>
+                    </>
+                    }
+
+                    {(extracost.travel === 'sprint' && UserData.invoice?.get.project && UserData.invoice.get.project.type === 'fixed') && <><ExtraCostContainer><Table minified noTile>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '150px' }}>Research Cost</th>
+                                    <th>Phase Distribution</th>
+                                    <th style={{ width: '56px' }}></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {extracost.phaseResearchCosts && extracost.phaseResearchCosts.map((e, i) =>
+                                    <tr key={`travel_cost_${i}`}>
+                                        <td>
+                                            <Input
+                                                style={{ width: "100%" }}
+                                                defaultValue={e.cost}
+                                                value={e.cost}
+                                                onChange={(e) => changeValueMultiple(e.target.value, i, 'cost', 'phaseResearchCosts')}
+                                                placeholder="ex. 10000"
+                                            />
+                                        </td>
+                                        <td>
+                                            <Select
+                                                style={{ minWidth: "100%" }}
+                                                defaultValue={e.phases}
+                                                value={e.phases ? e.phases : []}
+                                                mode="multiple"
+                                                placeholder="Select Phases"
+                                                allowClear
+                                                options={i === 0 ? [{ label: 'All Phases', value: 'all' }, ...filteredPhaseOptions('phaseResearchCosts')] : filteredPhaseOptions('phaseResearchCosts')}
+                                                onChange={e => changeValueMultiple(e, i, 'phases', 'phaseResearchCosts')}
+                                            />
+                                        </td>
+                                        <td>{i > 0 && <Button onClick={() => { deleteDistribution(i, 'phaseResearchCosts') }} icon={<FiTrash />} />}</td>
+                                    </tr>)}
+                            </tbody></table></Table></ExtraCostContainer>
+                        <Button type="primary" ghost disabled={!filteredPhaseOptions('phaseResearchCosts').length > 0} style={{ borderRadius: Theme.primary.radius }} size="medium" onClick={() => addNewDistribution('phaseResearchCosts')}>New Distribution</Button>
+                    </>}
                 </Box>
             </Box>
 

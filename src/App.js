@@ -13,13 +13,16 @@ import { fetchDomainData, fetchRateData, fetchSheetData } from './pages/login/go
 import { Loader } from './components/loading.style';
 import { sheetDataToObject } from './utility/util';
 import Invoice from './pages/invoice';
-import { Layout, Timeline } from './components/layout.style';
+import { Layout, Timeline, Box } from './components/layout.style';
 import SprintSheet from './pages/sprint/sprintTimeline';
 import Theme from './utility/theme';
 import ExportInvoice from './pages/export';
 import RateTab from './pages/rates/ratecard';
 import { Importer } from './pages/import';
 import { FiBold, FiDollarSign, FiPlay, FiRefreshCcw } from 'react-icons/fi';
+import ExportFlatBillInvoice from './pages/export/flatbillInvoice';
+import FlatBillTable from './pages/sprint/flatbill';
+import SprintTable from './pages/sprint';
 
 export const UserContext = React.createContext();
 
@@ -129,19 +132,25 @@ function App() {
                 </Header>
                 <div className='midpanel'>
                   <Invoice />
-                  <Timeline>
+                  {(modal && invoice?.project && invoice.project.type === 'sprint') && <Timeline>
                     <SprintSheet />
-                  </Timeline>
+                  </Timeline> }
                 </div>
                 <Header foot>
                 <div className='cage'>
-                  <div><Importer /></div>
+                  <div><Importer /> 
+                  { invoice?.project && <Box invisible> { invoice.project.type === 'fixed' && invoice.project.phases && <FlatBillTable /> }
+                  { invoice.project.type === 'sprint' && invoice.project.sprints && <SprintTable /> }</Box>}
+                </div>
                 <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => reset()} icon={<FiRefreshCcw />}>Reset Sheet</Button>
+               
                   <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setModal(!modal)} disabled={invoice.customer ? false : true} icon={<FiPlay />}>Generate Invoice</Button>
                 </div>
                 </Header>
                 <AntModal title={null} open={modal} footer={null} closable={false} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
-                  {modal && <ExportInvoice onClose={() => setModal(false)} />}
+                  {(modal && invoice.project && invoice.project.type === 'sprint') && <ExportInvoice onClose={() => setModal(false)} />}
+
+                  {(modal && invoice.project && invoice.project.type === 'fixed') && <ExportFlatBillInvoice onClose={() => setModal(false)} />}
                 </AntModal>
                 <AntModal title={null} open={rateModal} footer={null} closable={true} onCancel={()=> setRateModal(false)} destroyOnClose={true} bodyStyle={{ padding: Theme.dimensions.x1 }} width={1200}>
                   {rateModal && <RateTab />}
@@ -150,7 +159,6 @@ function App() {
             </>
           ) : (
             <>
-            
               {/* Render login form if user is not logged in */}
               <Modal
                 attache={

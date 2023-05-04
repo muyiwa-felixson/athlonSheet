@@ -163,3 +163,24 @@ export const DropLine = styled.div`
     color: ${Theme.primary.colors.google};
     `}
 `; 
+
+export const ViewEditInput = styled.input`
+    height: ${Theme.dimensions.x4};
+    padding: ${Theme.dimensions.x05} ${Theme.dimensions.x1};
+    border: 1px solid transparent;
+    border-radius: ${Theme.primary.radius};
+    transition: all 0.2s ease-in-out;
+    font-size: 1.1rem;
+    font-weight: 500;
+
+    &:focus{
+        border: 1px solid ${Theme.primary.colors.google};
+        padding: ${Theme.dimensions.x1};
+        font-size: 1rem;
+        font-weight: 400;
+    }
+    &:hover{
+        border: 1px solid ${Theme.primary.colors.border};
+        padding: ${Theme.dimensions.x1};
+    }
+`; 
