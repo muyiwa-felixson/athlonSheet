@@ -11,7 +11,6 @@ const SprintTable = () => {
     const shortCurrency = currency.slice(3);
     const currencyData = invoice?.get.project.currencyData?.quotes ? invoice?.get.project.currencyData?.quotes : [];
     const currencyRate = (currencyData.find(e=> e.currency === currency) && currencyData.find(e=> e.currency === currency).value) ? currencyData.find(e=> e.currency === currency).value : 1;
-    console.log(currencyRate);
 
     const getGroup = (sprint) => {
         return loading.find(group => group.to >= sprint) || null;

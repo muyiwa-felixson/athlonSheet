@@ -32,13 +32,13 @@ export const ManageProject = () => {
         let newProject = { ...project };
         setBusy(true);
         fetchCurrencyConversion().then((value) => {
-            console.log(value);
+            // console.log(value);
             const data = {
                 ...value, quotes: currenciesList.map(e => {
                     return { currency: e, value: value.quotes[e] };
                 })
             }
-            console.log(data);
+            // console.log(data);
             newProject.currencyData = data;
             newProject.convertCurrency = true;
             setProject(newProject);
@@ -79,6 +79,7 @@ export const ManageProject = () => {
                         {projectTypes.map((e, i) => <Box key={`project_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                     </Radio.Group>
                 </Box>
+                {project.type !== 'fixed' && <>
                 <Box>
                     <Label>Number of Sprints</Label>
                     <div><InputNumber min={1} max={100} defaultValue={project.sprints} onChange={e => changeValue({ target: { value: e } }, 'sprints')} /></div>
@@ -93,7 +94,7 @@ export const ManageProject = () => {
                     <Radio.Group value={project.billcycle} onChange={e => changeValue(e, 'billcycle')}>
                         {billCycleTypes.map((e, i) => <Box key={`bill_cycle_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                     </Radio.Group>
-                </Box>
+                </Box></>}
             </Grid>
             <Box pad={['x2', 'x0']}>
                 <Label>Billing Currency</Label>

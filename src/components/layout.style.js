@@ -6,6 +6,9 @@ import { darken, transparentize } from "polished";
 export const Box = styled.div`
     padding: ${props=> props.pad && props.pad.map(elem=> `${Theme.dimensions[elem]} `)};
     text-align: ${props=> props.align};
+    ${props=> props.invisible && css`
+        display: none;
+    `}
 `;
 
 export const Layout = styled.div`

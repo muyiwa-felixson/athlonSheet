@@ -63,13 +63,19 @@ export const businessTypes = [
 
 export const projectTypes = [
   { label: 'Sprint', value: 'sprint' },
-  { label: 'Fixed Cost', value: 'fixed', disabled: true },
+  { label: 'Fixed Cost', value: 'fixed', disabled: false },
   { label: 'Creative Capital', value: 'capital', disabled: true },
 ];
 
 export const travelTypes = [
   { label: 'None added', value: 'none' },
   { label: 'Per Sprint', value: 'sprint' },
+  { label: 'Lump Sum', value: 'lumpsum' },
+];
+
+export const phaseTravelTypes = [
+  { label: 'None added', value: 'none' },
+  { label: 'Per Phase', value: 'sprint' },
   { label: 'Lump Sum', value: 'lumpsum' },
 ];
 
