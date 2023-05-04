@@ -19,7 +19,7 @@ import Theme from './utility/theme';
 import ExportInvoice from './pages/export';
 import RateTab from './pages/rates/ratecard';
 import { Importer } from './pages/import';
-import { FiBold, FiDollarSign, FiPlay, FiRefreshCcw } from 'react-icons/fi';
+import { FiDollarSign, FiPlay, FiRefreshCcw } from 'react-icons/fi';
 import ExportFlatBillInvoice from './pages/export/flatbillInvoice';
 import FlatBillTable from './pages/sprint/flatbill';
 import SprintTable from './pages/sprint';
@@ -107,7 +107,6 @@ function App() {
 
       if (invoice.project.type === "fixed") {
         (invoice.project.sprints < 1) && errors.push({ type: "error", message: <span>What are we doing here? <stong>No Sprints?</stong></span> });
-        // (invoice.phases.length < 1 || invoice.phases?.filter(e => e.to === invoice.project.sprints).length < 1) && errors.push({ type: "warning", message: <span>Wait a minute! did your sprint loads cover all the sprints?</span> });
         (invoice.phases.length > 0 && invoice.phases?.filter(e => e.members.length === 0).length > 0) && errors.push({ type: "warning", message: <span>Except you don't like getting paid, some <strong>project phases have no members</strong></span> });
       }
     } else {
@@ -117,7 +116,7 @@ function App() {
     if (errors.filter(e => e.type === 'error').length > 0) {
       notification.open({
         message: 'Incomplete Fields',
-        description: <Space direction="vertical">{errors.filter(e => e.type === 'error').map(e => <Alert showIcon {...e} />)}</Space>,
+        description: <Space direction="vertical">{errors.filter(e => e.type === 'error').map(e => <Alert key={`error_notice_${Date.now()}`} showIcon {...e} />)}</Space>,
         duration: 0,
       });
     } else {
@@ -127,7 +126,7 @@ function App() {
     if (errors.filter(e => e.type === 'warning').length > 0) {
       notification.open({
         message: 'Warnings!',
-        description: <Space direction="vertical">{errors.filter(e => e.type === 'warning').map(e => <Alert showIcon {...e} />)}</Space>,
+        description: <Space direction="vertical">{errors.filter(e => e.type === 'warning').map(e => <Alert key={`warning_notice_${Date.now()}`} showIcon {...e} />)}</Space>,
       });
     }
   }
