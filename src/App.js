@@ -106,7 +106,7 @@ function App() {
       }
 
       if (invoice.project.type === "fixed") {
-        (invoice.project.sprints < 1) && errors.push({ type: "error", message: <span>What are we doing here? <stong>No Sprints?</stong></span> });
+        // (invoice.project.sprints < 1) && errors.push({ type: "error", message: <span>What are we doing here? <stong>No Sprints?</stong></span> });
         (invoice.phases.length > 0 && invoice.phases?.filter(e => e.members.length === 0).length > 0) && errors.push({ type: "warning", message: <span>Except you don't like getting paid, some <strong>project phases have no members</strong></span> });
       }
     } else {
