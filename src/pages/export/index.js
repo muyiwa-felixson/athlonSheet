@@ -1,22 +1,27 @@
-import { useContext, useRef } from "react"
+import { useContext, useRef, useState } from "react"
 import { UserContext } from "../../App";
 import ReactToPrint from 'react-to-print';
 import { DownloadTableExcel } from 'react-export-table-to-excel';
 import dayjs from 'dayjs';
 import Theme from "../../utility/theme";
 import { AthlonSheet, SheetHeader, Table } from "../../components/table.style";
-import SprintTable from "../sprint";
-import { Empty, Space, Button, Dropdown } from "antd";
+import { Empty, Space, Button, Dropdown, message } from "antd";
 import { Box, Grid } from "../../components/layout.style";
 import Logo from "../../assets/logo";
-import { FiColumns, FiDownload, FiFile, FiPrinter, FiSave } from "react-icons/fi";
+import { FiChevronDown, FiColumns, FiCopy, FiDownload, FiFile, FiPrinter, FiSave } from "react-icons/fi";
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { DropLine } from "../../components/input.style";
-import { currencies } from "../../utility/util";
+import { currencies, sprintDuration } from "../../utility/util";
+import { copyInvoiceDates, copySprintTimeline, copyTotals } from "./copy";
 
 const ExportInvoice = props => {
     const UserData = useContext(UserContext);
+    // const [messageApi, contextHolder] = message.useMessage();
+    // const [invoiceText, setInvoiceText] = useState(''); 
+    // const [sprintTimelineText, setSprintTimelineText] = useState(''); 
+    // const [totalsText, setTotalsText] = useState(''); 
+
     const excluded = UserData.excluded;
     const extracost = UserData.invoice.get.extracost ? UserData.invoice.get.extracost : null;
     const printable = useRef();
@@ -25,7 +30,7 @@ const ExportInvoice = props => {
     const currency = UserData.invoice.get.project.useCurrency ? UserData.invoice.get.project.useCurrency : 'USDUSD';
     const shortCurrency = currency.slice(3);
     const currencyData = UserData.invoice?.get.project.currencyData?.quotes ? UserData.invoice?.get.project.currencyData?.quotes : [];
-    const currencyRate = (currencyData.length > 0 && currencyData.find(e=> e.currency === currency).value) ? currencyData.find(e=> e.currency === currency).value : 1;
+    const currencyRate = (currencyData.length > 0 && currencyData.find(e => e.currency === currency).value) ? currencyData.find(e => e.currency === currency).value : 1;
 
     let total = {
         cost: 0,
@@ -51,7 +56,7 @@ const ExportInvoice = props => {
     };
 
     const handleFileDownload = () => {
-        const jsonData = { invoice: UserData.invoice.get, rateCard: UserData.data?.rateCard.get};
+        const jsonData = { invoice: UserData.invoice.get, rateCard: UserData.data?.rateCard.get };
         const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -73,142 +78,189 @@ const ExportInvoice = props => {
         >
             <DropLine><FiColumns /><span> Download Excel </span></DropLine></DownloadTableExcel>)
     }, { key: '3', label: (<DropLine highlight><FiSave /><span onClick={handleFileDownload}>Download Invoice File</span></DropLine>) }];
-    // console.log(UserData.sheet?.get);
+
+    const copyItems = [
+        { key: '1', label: (<DropLine><FiCopy /><span onClick={()=> handleCopy(sprintTimelineText, "Sprint timeline")}>Copy Sprint Timelines</span></DropLine>)},
+        { key: '2', label: (<DropLine><FiCopy /><span onClick={()=> handleCopy(invoiceText, "Invoice dates & costs")}>Copy Invoice Cost & Dates</span></DropLine>)},
+        // { key: '3', label: (<DropLine><FiCopy /><span onClick={()=> handleCopy('', '')}>Copy Full Table</span></DropLine>)},
+        { key: '4', label: (<DropLine><FiCopy /><span onClick={()=> handleCopy(totalsText, "Total breakdown")}>Copy Total Breakdown</span></DropLine>)},
+    ];
+
+
+    const handleCopy = (content, copyType) => {
+        const type = "text/plain";
+        const blob = new Blob([content], { type });
+        const data = [new ClipboardItem({ [type]: blob })];
+        navigator.clipboard.write(data).then(
+            () => {
+                message.info(`${copyType} copied!`);
+            }, () => {
+                message.warning('copy failed')
+            }
+        )
+    }
+    let invoiceText=''; 
+    let sprintTimelineText = ''; 
+    let totalsText = '';
+    const updateInvoiceText = content => {
+        invoiceText+= content;
+    }
+    const updateSprintTimelineText = content => {
+        sprintTimelineText += content;
+    }
+
+    const updateTotalsText = content => {
+        totalsText += content;
+    }
 
     return <>
         {/* <div style={{ display: 'none' }} ><SprintTable /></div> */}
         {UserData.sheet?.get.length > 0 && <>
-        <SheetHeader>
-            <Grid cols="auto max-content" className="sheetHeader">
-                <Box></Box>
-                <Box pad={['x2', 'x0']}>
-                    <Space>
-                        <Dropdown menu={{ items }}><span onClick={(e) => e.preventDefault()}><Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiDownload />}>Download</Button></span></Dropdown>
-                        <ReactToPrint
-                            trigger={() => <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiPrinter />}>Print</Button>}
-                            content={() => printable.current}
-                        />
-                        <Button size="large" onClick={props.onClose}>Close</Button>
-                    </Space>
-                </Box>
-            </Grid>
-        </SheetHeader>
-        <AthlonSheet className="athlonSheet" ref={printable} id="printable">
-            <Box pad={['x3']}>
-                <Grid cols="auto max-content">
-                    <Box>
-                        <Logo wide="true" style={{ height: Theme.dimensions.x8 }} />
-                    </Box>
-                    <Box>
-                        {/* <h4>Athlon Sheet</h4> */}
+            <SheetHeader>
+                <Grid cols="auto max-content" className="sheetHeader">
+                    <Box></Box>
+                    <Box pad={['x2', 'x0']}>
+                        <Space>
+                            
+                            <Dropdown.Button size="large" arrow menu={{ items: copyItems }} icon={<span style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '5px'}}><FiChevronDown /></span>}><span onClick={(e) => e.preventDefault()}>Copy</span></Dropdown.Button>
+                            <Dropdown menu={{ items }}><span onClick={(e) => e.preventDefault()}><Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiDownload />}>Download</Button></span></Dropdown>
+                            <ReactToPrint
+                                trigger={() => <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiPrinter />}>Print</Button>}
+                                content={() => printable.current}
+                            />
+                            <Button size="large" onClick={props.onClose}>Close</Button>
+                        </Space>
                     </Box>
                 </Grid>
-                {UserData.sheet?.get.length > 0 && <Box pad={['x3', 'x0']}>
-                    <Grid cols="1fr 2fr" gap={`${Theme.dimensions.x9}`} style={{ alignItems: 'start' }}>
-                        <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
-                            <span>Client: </span><strong>{UserData.invoice.get.customer.name}</strong>
-                            <span>Contact: </span><div><strong>{UserData.invoice.get.customer.contactName}</strong><br /><strong>{UserData.invoice.get.customer.contactEmail}</strong></div>
-                            <span>Project: </span><strong>{UserData.invoice.get.project.name}</strong>
-                            <span>Start: </span><strong>{dayjs(UserData.invoice.get.project.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
-                        </Grid>
-                        <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
-                            <span>Date Created: </span><strong>{dayjs(dayjs(), 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
-                            <span>Created By: </span><div><strong>{UserData.profile?.get.name}</strong></div>
-                            <span>Currency: </span><div><strong>{currencies.find(e=> e.value === currency).label}</strong></div>
-                        </Grid>
+            </SheetHeader>
+            <AthlonSheet className="athlonSheet" ref={printable} id="printable">
+                <Box pad={['x3']}>
+                    <Grid cols="auto max-content">
+                        <Box>
+                            <Logo wide="true" style={{ height: Theme.dimensions.x8 }} />
+                        </Box>
+                        <Box>
+                            {/* <h4>Athlon Sheet</h4> */}
+                        </Box>
                     </Grid>
+                    {UserData.sheet?.get.length > 0 && <Box pad={['x3', 'x0']}>
+                        <Grid cols="1fr 2fr" gap={`${Theme.dimensions.x9}`} style={{ alignItems: 'start' }}>
+                            <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
+                                <span>Client: </span><strong>{UserData.invoice.get.customer.name}</strong>
+                                <span>Contact: </span><div><strong>{UserData.invoice.get.customer.contactName}</strong><br /><strong>{UserData.invoice.get.customer.contactEmail}</strong></div>
+                                <span>Project: </span><strong>{UserData.invoice.get.project.name}</strong>
+                                <span>Start: </span><strong>{dayjs(UserData.invoice.get.project.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
+                            </Grid>
+                            <Grid cols="max-content auto" gap={`${Theme.dimensions.x1} ${Theme.dimensions.x2}`}>
+                                <span>Date Created: </span><strong>{dayjs(dayjs(), 'DD/MM/YYYY').format('MMM D, YYYY')}</strong>
+                                <span>Created By: </span><div><strong>{UserData.profile?.get.name}</strong></div>
+                                <span>Currency: </span><div><strong>{currencies.find(e => e.value === currency).label}</strong></div>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    }
+                    {UserData.sheet?.get.length > 0 ? <Table><table ref={dataTable}>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th></th>
+                                <th>Members</th>
+                                <th className="alignR">Personnel</th>
+                                <th className="alignR">Travel</th>
+                                <th className="alignR">Research</th>
+                                <th className="alignR">Discount%</th>
+                                <th className="alignR">Discount</th>
+                                <th className="alignR">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                UserData.sheet.get.map((group) => group.map((elem, index) => {
+                                    if (elem.type === 'invoice') {
+                                        total.personnel += parseFloat(elem.cost);
+                                        total.cost += parseFloat(elem.total);
+                                        total.discount += parseFloat(elem.discount);
+                                        total.travel += parseFloat(elem.travel);
+                                        total.research += parseFloat(elem.research);
+                                        
+                                        updateInvoiceText(`${dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')} \t ${elem.total.toFixed(2)} \n`);
+                                    } else {
+                                        updateSprintTimelineText(`Sprint ${elem.sprint} \t ${dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')} \t ${dayjs(elem.date, 'DD/MM/YYYY').add((sprintDuration) - 3, 'day').format('MMM D, YYYY')} \n`)
+                                    }
+                                    const Row = elem.type === 'invoice' ? <tr className="invoiceRow" key={`sheet_${elem.type}_${index}`}>
+                                        <td>{dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</td>
+                                        <td colSpan={2}>INVOICE</td>
+                                        <td className="alignR">{elem.cost.toFixed(2)}</td>
+                                        <td className="alignR">{elem.travel.toFixed(2)}</td>
+                                        <td className="alignR">{elem.research.toFixed(2)}</td>
+                                        <td colSpan={2} className="alignR">{elem.discount ? `-` : ''}{elem.discount.toFixed(2)}</td>
+                                        <td className="alignR"><strong>{elem.total.toFixed(2)}</strong></td>
+                                    </tr> : <tr key={`sheet_${elem.type}_${index}`}>
+                                        <td>{elem.date}</td>
+                                        <td>Sprint {elem.sprint}</td>
+                                        <td>{elem.members?.length}</td>
+                                        <td className="alignR">{elem.personnel.toFixed(2)}</td>
+                                        <td className="alignR">{elem.travel.toFixed(2)}</td>
+                                        <td className="alignR">{elem.research.toFixed(2)}</td>
+                                        <td className="alignR">{elem.discount}%</td>
+                                        <td className="alignR">{elem.discountValue ? `-` : ''}{elem.discountValue.toFixed(2)}</td>
+                                        <td className="alignR"><strong>{elem.cost.toFixed(2)}</strong></td>
+                                    </tr>;
+                                    return Row;
+                                })
+                                )
+                            }
+                        </tbody>
+                        <tbody className="totalBody">
+                            <tr>
+                                <td colSpan={8} className="alignR"><em>Total Personnel Cost</em></td>
+                                <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.personnel)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={8} className="alignR"><em>Travels</em></td>
+                                <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.travel)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={8} className="alignR"><em>Research Incentives</em></td>
+                                <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.research)}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={8} className="alignR"><em>Discount</em></td>
+                                <td className="alignR">-{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.discount)}</td>
+                            </tr>
+                            {
+                                extracost?.insurance && <>
+                                    <tr>
+                                        <td colSpan={8} className="alignR"><strong>TOTAL</strong></td>
+                                        <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost)}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={8} className="alignR"><em>Payment Insurance (5% of total)</em></td>
+                                        <td className="alignR"><em>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}</em></td>
+                                    </tr>
+                                </>
+                            }
+                            <tr className="totalRow">
+                                <td colSpan={8} className="alignR"><strong>NET TOTAL</strong></td>
+                                <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}</strong></td>
+                            </tr>
+                        </tbody>
+                        {
+                            updateTotalsText(`Total Personnel Cost \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.personnel)}
+                            Travels \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.travel)}
+                            Research Incentives \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.research)}
+                            Discount \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.discount)}
+                            Payment Insurance (5% of total) \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}
+                            Total \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}`)
+                        }
+                    </table></Table> : <Box pad={['x4']}><Empty description={<p><strong>No Data</strong><br />Please provide complete information for invoice fields</p>} /></Box>
+                    }
+                    <br />
+                    {UserData.invoice?.get.project.useCurrency !== 'USDUSD' && <em>(As on {dayjs.unix(UserData.invoice?.get.project.currencyData?.timestamp).format('H:mm Do MMMM')})  1 USD = {currencyRate} {currencies.find(e => e.value === currency).label}</em>}
                 </Box>
-                }
-                {UserData.sheet?.get.length > 0 ? <Table><table ref={dataTable}>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th></th>
-                            <th>Members</th>
-                            <th className="alignR">Personnel</th>
-                            <th className="alignR">Travel</th>
-                            <th className="alignR">Research</th>
-                            <th className="alignR">Discount%</th>
-                            <th className="alignR">Discount</th>
-                            <th className="alignR">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            UserData.sheet.get.map((group) => group.map((elem, index) => {
-                                if (elem.type === 'invoice') {
-                                    total.personnel += parseFloat(elem.cost);
-                                    total.cost += parseFloat(elem.total);
-                                    total.discount += parseFloat(elem.discount);
-                                    total.travel += parseFloat(elem.travel);
-                                    total.research += parseFloat(elem.research);
-                                }
-
-                                const Row = elem.type === 'invoice' ? <tr className="invoiceRow" key={`sheet_${elem.type}_${index}`}>
-                                    <td>{dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')}</td>
-                                    <td colSpan={2}>INVOICE</td>
-                                    <td className="alignR">{elem.cost.toFixed(2)}</td>
-                                    <td className="alignR">{elem.travel.toFixed(2)}</td>
-                                    <td className="alignR">{elem.research.toFixed(2)}</td>
-                                    <td colSpan={2} className="alignR">{elem.discount ? `-` : ''}{elem.discount.toFixed(2)}</td>
-                                    <td className="alignR"><strong>{elem.total.toFixed(2)}</strong></td>
-                                </tr> : <tr key={`sheet_${elem.type}_${index}`}>
-                                    <td>{elem.date}</td>
-                                    <td>Sprint {elem.sprint}</td>
-                                    <td>{elem.members?.length}</td>
-                                    <td className="alignR">{elem.personnel.toFixed(2)}</td>
-                                    <td className="alignR">{elem.travel.toFixed(2)}</td>
-                                    <td className="alignR">{elem.research.toFixed(2)}</td>
-                                    <td className="alignR">{elem.discount}%</td>
-                                    <td className="alignR">{elem.discountValue ? `-` : ''}{elem.discountValue.toFixed(2)}</td>
-                                    <td className="alignR"><strong>{elem.cost.toFixed(2)}</strong></td>
-                                </tr>;
-                                return Row;
-                            })
-                            )
-                        }
-                    </tbody>
-                    <tbody className="totalBody">
-                        <tr>
-                            <td colSpan={8} className="alignR"><em>Total Personnel Cost</em></td>
-                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.personnel)}</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={8} className="alignR"><em>Travels</em></td>
-                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.travel)}</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={8} className="alignR"><em>Research Incentives</em></td>
-                            <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.research)}</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={8} className="alignR"><em>Discount</em></td>
-                            <td className="alignR">-{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.discount)}</td>
-                        </tr>
-                        {
-                            extracost?.insurance && <>
-                                <tr>
-                                    <td colSpan={8} className="alignR"><strong>TOTAL</strong></td>
-                                    <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost)}</strong></td>
-                                </tr>
-                                <tr>
-                                    <td colSpan={8} className="alignR"><em>Payment Insurance (5% of total)</em></td>
-                                    <td className="alignR"><em>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}</em></td>
-                                </tr>
-                            </>
-                        }
-                        <tr className="totalRow">
-                            <td colSpan={8} className="alignR"><strong>NET TOTAL</strong></td>
-                            <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}</strong></td>
-                        </tr>
-                    </tbody>
-                </table></Table> : <Box pad={['x4']}><Empty description={<p><strong>No Data</strong><br />Please provide complete information for invoice fields</p>} /></Box>
-                }
-                <br/>
-                { UserData.invoice?.get.project.useCurrency !== 'USDUSD' && <em>(As on {dayjs.unix(UserData.invoice?.get.project.currencyData?.timestamp).format('H:mm Do MMMM')})  1 USD = {currencyRate} {currencies.find(e=> e.value === currency).label}</em>}
-            </Box>
-        </AthlonSheet>
-        </> }
+                <span>{invoiceText}</span>
+            </AthlonSheet>
+        </>}
     </>
 }
 export default ExportInvoice;
