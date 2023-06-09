@@ -254,7 +254,7 @@ export const ManageDiscounts = props => {
                     </>
                     }
 
-                    {(extracost.travel === 'sprint' && UserData.invoice?.get.project && UserData.invoice.get.project.type === 'fixed') && <><ExtraCostContainer><Table minified noTile>
+                    {(extracost.research === 'sprint' && UserData.invoice?.get.project && UserData.invoice.get.project.type === 'fixed') && <><ExtraCostContainer><Table minified noTile>
                         <table>
                             <thead>
                                 <tr>

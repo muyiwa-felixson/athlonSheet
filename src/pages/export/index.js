@@ -122,7 +122,7 @@ const ExportInvoice = props => {
                     <Box pad={['x2', 'x0']}>
                         <Space>
                             
-                            <Dropdown.Button size="large" arrow menu={{ items: copyItems }} icon={<span style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '5px'}}><FiChevronDown /></span>}><span onClick={(e) => e.preventDefault()}>Copy</span></Dropdown.Button>
+                            <Dropdown.Button size="large" arrow menu={{ items: copyItems }} icon={<span style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '5px'}}><FiChevronDown /></span>}><span>Copy</span></Dropdown.Button>
                             <Dropdown menu={{ items }}><span onClick={(e) => e.preventDefault()}><Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiDownload />}>Download</Button></span></Dropdown>
                             <ReactToPrint
                                 trigger={() => <Button type="primary" size="large" style={{ borderRadius: Theme.primary.radius }} icon={<FiPrinter />}>Print</Button>}
