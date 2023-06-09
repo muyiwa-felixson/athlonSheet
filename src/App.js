@@ -25,6 +25,7 @@ import FlatBillTable from './pages/sprint/flatbill';
 import SprintTable from './pages/sprint';
 
 export const UserContext = React.createContext();
+const defaultCurrency = process.env.REACT_APP_CURRENCY;
 
 function App() {
   // State variables
@@ -166,7 +167,7 @@ function App() {
                 <Header>
                   <div className='cage'>
                     <Logo className="topbrand" wide='true' />
-                    <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true} icon={<FiDollarSign />}>Rate Card</Button>
+                    <Button size="large" style={{ borderRadius: Theme.primary.radius }} onClick={() => setRateModal(!rateModal)} disabled={sheetRates ? false : true} icon={new Intl.NumberFormat('en-US', { style: 'currency', currency: defaultCurrency }).format('').replace(/\d/g, '').replace(".",'').trim()}> Rate Card</Button>
                     <GoogleProfile {...profile} logOut={logOut} />
                   </div>
                 </Header>
