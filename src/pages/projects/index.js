@@ -8,6 +8,8 @@ import Theme from '../../utility/theme';
 import { billCycleTypes, currencies, dateFormat, projectTypes, range } from '../../utility/util';
 import { fetchCurrencyConversion } from '../login/googlesheet';
 
+const defaultCurrency = process.env.REACT_APP_CURRENCY;
+
 export const ManageProject = () => {
     const UserData = React.useContext(UserContext);
     const [busy, setBusy] = useState(false);
@@ -18,7 +20,7 @@ export const ManageProject = () => {
         sprints: 0,
         billrate: 2,
         billcycle: 'start',
-        useCurrency: 'USDUSD',
+        useCurrency: `${defaultCurrency}${defaultCurrency}`,
         currencyData: {}
     });
 

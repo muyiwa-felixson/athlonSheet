@@ -49,7 +49,7 @@ export const fetchRateData = async () => {
 export const fetchCurrencyConversion = async () => {
   try {
     const response = await axios.get(
-      `https://api.apilayer.com/currency_data/live?base=USD&symbols=EUR,GBP`, {
+      `https://api.apilayer.com/currency_data/live?source=GBP&symbols=EUR,USD`, {
         headers: {
           apikey: apiLayerKey
         }
