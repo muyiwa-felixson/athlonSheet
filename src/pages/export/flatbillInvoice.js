@@ -15,6 +15,8 @@ import { DropLine } from "../../components/input.style";
 import { currencies } from "../../utility/util";
 import FlatBillTable from "../sprint/flatbill";
 
+const defaultCurrency = process.env.REACT_APP_CURRENCY;
+
 const ExportFlatBillInvoice = props => {
     const UserData = useContext(UserContext);
     const excluded = UserData.excluded;
@@ -22,7 +24,7 @@ const ExportFlatBillInvoice = props => {
     const printable = useRef();
     const dataTable = useRef(null);
 
-    const currency = UserData.invoice.get.project.useCurrency ? UserData.invoice.get.project.useCurrency : 'USDUSD';
+    const currency = UserData.invoice.get.project.useCurrency ? UserData.invoice.get.project.useCurrency : `${defaultCurrency}${defaultCurrency}`;
     const shortCurrency = currency.slice(3);
     const currencyData = UserData.invoice?.get.project.currencyData?.quotes ? UserData.invoice?.get.project.currencyData?.quotes : [];
     const currencyRate = currencyData.find(e=> e.currency === currency) ? currencyData.find(e=> e.currency === currency).value : 1;
@@ -199,7 +201,7 @@ const ExportFlatBillInvoice = props => {
                 </table></Table> : <Box pad={['x4']}><Empty description={<p><strong>No Data</strong><br />Please provide complete information for invoice fields</p>} /></Box>
                 }
                 <br/>
-                { UserData.invoice?.get.project.useCurrency !== 'USDUSD' && <em>(As on {dayjs.unix(UserData.invoice?.get.project.currencyData?.timestamp).format('H:mm Do MMMM')})  1 USD = {currencyRate} {currencies.find(e=> e.value === currency).label}</em>}
+                { UserData.invoice?.get.project.useCurrency !== `${defaultCurrency}${defaultCurrency}` && <em>(As on {dayjs.unix(UserData.invoice?.get.project.currencyData?.timestamp).format('H:mm Do MMMM')})  1 {defaultCurrency} = {currencyRate} {currencies.find(e=> e.value === currency).label}</em>}
             </Box>
         </AthlonSheet>
     </>
