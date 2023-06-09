@@ -3,11 +3,13 @@ import { UserContext } from '../../App';
 import dayjs from 'dayjs';
 import {  sprintDuration } from '../../utility/util';
 
+const defaultCurrency = process.env.REACT_APP_CURRENCY;
+
 const FlatBillTable = () => {
     const { invoice, data, sheet, excluded } = useContext(UserContext);
     const phases = invoice?.get.phases;
 
-    const currency = invoice.get.project.useCurrency ? invoice.get.project.useCurrency : 'USDUSD';
+    const currency = invoice.get.project.useCurrency ? invoice.get.project.useCurrency : `${defaultCurrency}${defaultCurrency}`;
     // const shortCurrency = currency.slice(3);
     const currencyData = invoice?.get.project.currencyData?.quotes ? invoice?.get.project.currencyData?.quotes : [];
     const currencyRate = (currencyData.find(e=> e.currency === currency) && currencyData.find(e=> e.currency === currency).value) ? currencyData.find(e=> e.currency === currency).value : 1;

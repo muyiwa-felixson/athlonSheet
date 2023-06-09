@@ -1,3 +1,5 @@
+const defaultCurrency = process.env.REACT_APP_CURRENCY;
+
 export const sheetDataToObject=(sheetData)=> {
     const headers = sheetData[0];
     const dataRows = sheetData.slice(1);
@@ -99,17 +101,9 @@ export const range = (start, end) => {
 }
 
 export const currencies = [
-  {label: 'Australian Dollar (AUD)', value: 'USDAUD'},
-  {label: 'British Pound (GBP)', value: 'USDGBP'},
-  {label: 'Canadian Dollar (CAD)', value: 'USDCAD'},
-  {label: 'New Zealand Dollar (NZD)', value: 'USDNZD'},
-  {label: 'United States Dollar (USD)', value: 'USDUSD'},
+  {label: 'Australian Dollar (AUD)', value: `${defaultCurrency}AUD`},
+  {label: 'British Pound (GBP)', value: `${defaultCurrency}GBP`},
+  {label: 'Canadian Dollar (CAD)', value: `${defaultCurrency}CAD`},
+  {label: 'New Zealand Dollar (NZD)', value: `${defaultCurrency}NZD`},
+  {label: 'United States Dollar (USD)', value: `${defaultCurrency}USD`},
 ];
-
-export const currencySYmbols = {
-USDUSD:  '$',
-USDGBP: '£',
-USDCAD: 'C$',
-USDNZD: '$NZ',
-USDAUD: 'A$'
-}

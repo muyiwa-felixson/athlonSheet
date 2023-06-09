@@ -4,6 +4,7 @@ const apiKey = process.env.REACT_APP_GOOGLE_API_KEY; // Replace with your API ke
 const sheetId = process.env.REACT_APP_SHEET_ID; // Replace with your sheet ID
 const sheetName = "Members"; // Replace with your sheet name
 const apiLayerKey = process.env.REACT_APP_APILAYER_KEY;
+const currency = process.env.REACT_APP_CURRENCY;
 
 
 
@@ -49,7 +50,7 @@ export const fetchRateData = async () => {
 export const fetchCurrencyConversion = async () => {
   try {
     const response = await axios.get(
-      `https://api.apilayer.com/currency_data/live?source=GBP&symbols=EUR,USD`, {
+      `https://api.apilayer.com/currency_data/live?source=${currency}&currencies=`, {
         headers: {
           apikey: apiLayerKey
         }

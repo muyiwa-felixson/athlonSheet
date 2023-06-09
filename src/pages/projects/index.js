@@ -103,7 +103,7 @@ export const ManageProject = () => {
                 <Space>
                     <Select style={{ width: '220px' }} defaultValue={project.useCurrency} value={project.useCurrency} onChange={e => changeValue({ target: { value: e } }, 'useCurrency')} 
                     options={currencies.map(e=> {
-                        return {...e, disabled: !(project.currencyData?.success || e.value === 'USDUSD')}
+                        return {...e, disabled: !(project.currencyData?.success || e.value === `${defaultCurrency}${defaultCurrency}`)}
                     })} 
                     />
                     <Button loading={busy}onClick={()=> getRates()}>Get rates</Button>
