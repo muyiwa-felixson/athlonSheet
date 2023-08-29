@@ -108,7 +108,7 @@ export const ManageDiscounts = props => {
                 <Box pad={['x1']} />
                 <Box>
                     <Box>
-                        <Label>How would you like to handle Travel costs?</Label>
+                        <Label>Add Travel costs?</Label>
                         <Radio.Group value={extracost.travel} onChange={e => changeValue(e, 'travel')}>
                             {realTravelTypes.map((e, i) => <Box key={`travel_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                         </Radio.Group>
@@ -206,7 +206,7 @@ export const ManageDiscounts = props => {
                 <Box pad={['x1']} />
                 <Box width="800px">
                     <Box>
-                        <Label>How would you like to handle Research costs?</Label>
+                        <Label>Add Research costs?</Label>
                         <Radio.Group value={extracost.research} onChange={e => changeValue(e, 'research')}>
                             {realTravelTypes.map((e, i) => <Box key={`research_type_${i}`} pad={['x1', 'x0']}><Radio disabled={e.disabled} value={e.value}>{e.label}</Radio></Box>)}
                         </Radio.Group>
