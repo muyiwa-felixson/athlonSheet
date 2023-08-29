@@ -37,27 +37,26 @@ const SprintTable = () => {
         let projectTotal = 0;
         let projectCost = 0;
         let groupCost = 0;
+        let groupCalculated = 0;
         let groupTravel = 0;
         let groupResearch = 0;
         let startDate = date;
-
-        for (let i = 0; i < sprints; i++) {
+        const discount = extracost.discount;
+        const discountValue = extracost.discountValue;
+        const travel = extracost.travel;
+        const research = extracost.research;
+        
+        for (let i = 0; i < sprints; i++) { 
             const sprintDate = dayjs(date, 'DD/MM/YYYY').add(14 * i, 'day').format('DD/MM/YYYY');
-            const discount = extracost.discount;
-            const discountValue = extracost.discountValue;
-
-            const travel = extracost.travel;
+            
             const travelCost = extracost.travel === 'sprint' && extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.travelCosts.find(e => e.sprints.includes(`${i+1}`)).cost * currencyRate : 0;
-            const research = extracost.research;
             const researchCost = extracost.research === 'sprint' && extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)) ? extracost.researchCosts.find(e => e.sprints.includes(`${i+1}`)).cost * currencyRate : 0;
             // const insurance = extracost.insurance;
-
-            // console.log();
-
+            
             const sprintDiscount = discount ? discountValue : 0;
             let sprintCost = 0;
+            let sprintTotal = 0;
             let personnelCost = 0;
-            let sprintDiscounted = 0; 
 
             // get single sprint cost based on members
 
@@ -66,36 +65,28 @@ const SprintTable = () => {
                 // console.log("Personnel Cost:", personnelCost);
             })
             // COST AGGREGATION
-            sprintCost = sprintCost + personnelCost;
+            sprintCost = personnelCost;
 
-            // if travel cost applies before discount
-            if (travel === 'sprint' && discount === 'total') {
-                sprintCost = sprintCost + parseFloat(travelCost);
-            }
-            if (research === 'sprint' && discount === 'total') {
-                sprintCost = sprintCost + parseFloat(researchCost);
-            }
-            sprintDiscounted = (sprintDiscount ? sprintCost * (discountValue) / 100 : 0);
-            sprintCost = (sprintCost - sprintDiscounted);
+            sprintTotal = sprintCost;
 
-
-            // If travel and research is not affected by discount
-            if (travel === 'sprint' && discount !== 'total') {
-                sprintCost = sprintCost + parseFloat(travelCost);
+            // Check if travel and research cost is per sprint
+            if (travel === 'sprint') {
+                sprintTotal = sprintCost + parseFloat(travelCost);
             }
-            if (research === 'sprint' && discount !== 'total') {
-                sprintCost = sprintCost + parseFloat(researchCost);
+            if (research === 'sprint') {
+                sprintTotal = sprintTotal + parseFloat(researchCost);
             }
 
-            // group total including discounts
-            groupTotal = groupTotal + sprintCost;
-            // Group total without discounts
-            groupCost = groupCost + personnelCost;
+            // group total with all extras
+            groupTotal = groupTotal + sprintTotal;
+
+            // Group personell cost only
+            groupCost = groupCost + sprintCost;
             groupTravel += parseFloat(travelCost);
             groupResearch += parseFloat(researchCost);
 
             // Project Total with discount and with out
-            projectTotal = projectTotal + groupTotal;
+            projectTotal = projectTotal + sprintTotal;
             projectCost = projectCost + sprintCost;
 
 
@@ -108,28 +99,32 @@ const SprintTable = () => {
                 sprint: i + 1,
                 date: sprintDate,
                 cost: sprintCost,
-                personnel: personnelCost,
+                total: sprintTotal,
                 travel: travelCost,
                 research: researchCost,
                 members: getGroup(i+1)?.members.map((member) => ({ name: member.name, role: member.role, commitment: member.commitment, cost: parseInt(getMemberCost(member.role) *  member.commitment || 0) })),
-                discount: sprintDiscount,
-                discountValue: sprintDiscounted
+                // discount: sprintDiscount,
+                // discountValue: sprintDiscounted
             });
 
             if (g === billrate || i === sprints - 1) {
                 g = 0;
+                // 5% Insurance calculation
+                console.log(extracost.insurance, "insurance", groupTotal, groupTotal * 1.05)
+                // groupCalculated = extracost.insurance ? groupTotal * 1.05 : groupTotal;
+
                 if (billcycle === 'start') {
-                    sprintItems.unshift({ type: 'invoice', cost: groupCost, total: groupTotal, date: startDate, travel: groupTravel, research: groupResearch, discount: (groupCost + groupTravel + groupResearch) - groupTotal });
+                    sprintItems.unshift({ type: 'invoice', cost: groupCost, total: groupTotal, calculated: groupCalculated, date: startDate, travel: groupTravel, research: groupResearch, discount: 0 });
                 } else {
                     const nextFriday = (5 - dayjs(sprintDate, 'DD/MM/YYYY').day() + 3) % 7;
-                    sprintItems.push({ type: 'invoice', cost: groupCost, total: groupTotal, date: dayjs(sprintDate, 'DD/MM/YYYY').add(sprintDuration - 3, 'day').add(nextFriday, 'day').format('DD/MM/YYYY'), travel: groupTravel, research: groupResearch, discount: (groupCost + groupTravel + groupResearch) - groupTotal });
+                    sprintItems.push({ type: 'invoice', cost: groupCost, total: groupTotal, date: dayjs(sprintDate, 'DD/MM/YYYY').add(sprintDuration - 3, 'day').add(nextFriday, 'day').format('DD/MM/YYYY'), travel: groupTravel, research: groupResearch, discount: 0   });
                 }
                 sprintGroup.push(sprintItems);
                 sprintItems = [];
                 groupTotal = 0;
-                sprintCost = 0;
                 groupCost = 0;
                 groupResearch = 0;
+                personnelCost = 0;
                 groupTravel = 0;
             }
         }

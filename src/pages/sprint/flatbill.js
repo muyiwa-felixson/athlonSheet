@@ -57,6 +57,7 @@ const FlatBillTable = () => {
             // console.log("travels and research", travelCost, researchCost);
             const phaseDiscount = discount ? discountValue : 0;
             let phaseCost = 0;
+            let phaseTotal = 0;
             let personnelCost = 0;
             let phaseDiscounted = 0; 
 
@@ -65,23 +66,13 @@ const FlatBillTable = () => {
             })
 
             phaseCost = personnelCost;
+            phaseTotal = phaseCost;
 
-            if (discount === 'total') {
-                phaseCost = phaseCost + parseFloat(travelCost);
-            }
-            if (discount === 'total') {
-                phaseCost = phaseCost + parseFloat(researchCost);
-            }
+            if (travel !== 'false') { phaseTotal = phaseCost + parseFloat(travelCost); }
+            if (research !== 'false') { phaseTotal = phaseTotal + parseFloat(researchCost); }
 
-            phaseDiscounted = (phaseDiscount ? phaseCost * (discountValue) / 100 : 0);
-            phaseCost = (phaseCost - phaseDiscounted);
+            // phaseDiscounted = (phaseDiscount ? phaseCost * (discountValue) / 100 : 0);
 
-            if (discount !== 'total') {
-                phaseCost = phaseCost + parseFloat(travelCost);
-            }
-            if (discount !== 'total') {
-                phaseCost = phaseCost + parseFloat(researchCost);
-            }
 
 
             phaseItems.push({
@@ -90,12 +81,11 @@ const FlatBillTable = () => {
                 date: startDate,
                 endDate: endDate,
                 cost: phaseCost,
+                total: phaseTotal,
                 personnel: personnelCost,
                 travel: travelCost,
                 research: researchCost,
-                members: getGroup(phase.name)?.members.map((member) => ({ name: member.name, role: member.role, commitment: member.commitment, cost: parseInt(getMemberCost(member.role) *  member.commitment || 0) })),
-                discount: phaseDiscount,
-                discountValue: phaseDiscounted
+                members: getGroup(phase.name)?.members.map((member) => ({ name: member.name, role: member.role, commitment: member.commitment, cost: parseInt(getMemberCost(member.role) *  member.commitment || 0) }))
             })
 
             startDate = endDate;

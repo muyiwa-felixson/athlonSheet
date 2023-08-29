@@ -33,6 +33,10 @@ export const Table = styled.div`
                 &:last-child{
                     background: ${transparentize(0.8, Theme.primary.colors.border)};
                 }
+                &.totalColumn{
+                    background: ${transparentize(0.8, Theme.primary.colors.border)};
+                    border-right: 1px solid ${Theme.primary.colors.border};
+                }
              }
         }
     }

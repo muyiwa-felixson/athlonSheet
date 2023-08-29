@@ -125,7 +125,7 @@ export const ManageDiscounts = props => {
                             <thead>
                                 <tr>
                                     <th style={{ width: '150px' }}>Travel Cost</th>
-                                    <th>Sprint Distribution</th>
+                                    <th>Bill to Sprint(s)</th>
                                     <th style={{ width: '56px' }}></th>
                                 </tr>
                             </thead>
@@ -223,7 +223,7 @@ export const ManageDiscounts = props => {
                             <thead>
                                 <tr>
                                     <th style={{ width: '150px' }}>Research Cost</th>
-                                    <th>Sprint Distribution</th>
+                                    <th>Bill to Sprint(s)</th>
                                     <th style={{ width: '56px' }}></th>
                                 </tr>
                             </thead>

@@ -40,6 +40,7 @@ const ExportInvoice = props => {
         personnel: 0,
         travel: extracost?.travel === 'lumpsum' ? parseInt(extracost.travelCost) * currencyRate : 0,
         research: extracost?.research === 'lumpsum' ? parseInt(extracost.researchCost) * currencyRate : 0,
+        insurance: 0,
     };
     total.cost += total.travel + total.research;
     const handleDownloadPdf = async () => {
@@ -114,6 +115,32 @@ const ExportInvoice = props => {
     const updateTotalsText = content => {
         totalsText += content;
     }
+    let GroupFYP = [];
+    let CalculatedGroupTotals = [];
+    
+    UserData.sheet.get.map((group) => group.map((elem, index) => {
+        if (elem.type === 'invoice') {
+            total.personnel += parseFloat(elem.cost);
+            total.cost += parseFloat(elem.total);
+            total.travel += parseFloat(elem.travel);
+            total.research += parseFloat(elem.research);
+            
+            GroupFYP.push({date: elem.date, total: parseFloat(elem.total)});
+        }    
+    }));
+    
+    total.discount = extracost.discount !== 'false' ? (extracost.discount === 'team' ? total.personnel  : total.cost) * extracost.discountValue/100 : 0;
+    let discountRemain  = total.discount;
+    total.cost = total.cost  - total.discount;
+    GroupFYP.reverse().map((elem)=>{   
+        if(elem.total < discountRemain){
+            CalculatedGroupTotals.push({date: elem.date, total: 0, discount: elem.total});
+            discountRemain = discountRemain - elem.total;
+        } else {
+            CalculatedGroupTotals.push({date: elem.date, total: elem.total - discountRemain, discount: discountRemain});
+            discountRemain = 0;
+        }
+    })
 
     return <>
         {/* <div style={{ display: 'none' }} ><SprintTable /></div> */}
@@ -170,22 +197,21 @@ const ExportInvoice = props => {
                                 <th className="alignR">Personnel</th>
                                 <th className="alignR">Travel</th>
                                 <th className="alignR">Research</th>
-                                <th className="alignR">Discount%</th>
+                                <th colSpan={extracost.insurance ? 1 : 2} className="alignR">Sub Total</th>
                                 <th className="alignR">Discount</th>
+                                {extracost.insurance && <th className="alignR">Insurance</th> }
                                 <th className="alignR">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
                                 UserData.sheet.get.map((group) => group.map((elem, index) => {
+                                    const realTotal = CalculatedGroupTotals.find(groupitem => groupitem.date === elem.date);
+                                    let insurance = 0;
                                     if (elem.type === 'invoice') {
-                                        total.personnel += parseFloat(elem.cost);
-                                        total.cost += parseFloat(elem.total);
-                                        total.discount += parseFloat(elem.discount);
-                                        total.travel += parseFloat(elem.travel);
-                                        total.research += parseFloat(elem.research);
-                                        
-                                        updateInvoiceText(`${dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')} \t ${elem.total.toFixed(2)} \n`);
+                                        insurance = extracost.insurance ? realTotal.total * 0.05 : 0;
+                                        total.insurance += insurance;
+                                        updateInvoiceText(`${dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')} \t ${(realTotal.total + insurance).toFixed(2)} \n`);
                                     } else {
                                         updateSprintTimelineText(`Sprint ${elem.sprint} \t ${dayjs(elem.date, 'DD/MM/YYYY').format('MMM D, YYYY')} \t ${dayjs(elem.date, 'DD/MM/YYYY').add((sprintDuration) - 3, 'day').format('MMM D, YYYY')} \n`)
                                     }
@@ -195,18 +221,21 @@ const ExportInvoice = props => {
                                         <td className="alignR">{elem.cost.toFixed(2)}</td>
                                         <td className="alignR">{elem.travel.toFixed(2)}</td>
                                         <td className="alignR">{elem.research.toFixed(2)}</td>
-                                        <td colSpan={2} className="alignR">{elem.discount ? `-` : ''}{elem.discount.toFixed(2)}</td>
-                                        <td className="alignR"><strong>{elem.total.toFixed(2)}</strong></td>
+                                        <td colSpan={extracost.insurance ? 1 : 2} className="alignR totalColumn">{elem.total.toFixed(2)}</td>
+                                        <td className="alignR">{extracost.discount && realTotal.discount > 0 ? `-${realTotal.discount.toFixed(2)}` : ''}</td>
+                                        { extracost.insurance &&  <td className="alignR">{(realTotal.total * 0.05 ).toFixed(2)}</td> }
+                                        <td className="alignR"><strong>{(realTotal.total + insurance).toFixed(2)}</strong></td>
                                     </tr> : <tr key={`sheet_${elem.type}_${index}`}>
                                         <td>{elem.date}</td>
                                         <td>Sprint {elem.sprint}</td>
                                         <td>{elem.members?.length}</td>
-                                        <td className="alignR">{elem.personnel.toFixed(2)}</td>
+                                        <td className="alignR">{elem.cost.toFixed(2)}</td>
                                         <td className="alignR">{elem.travel.toFixed(2)}</td>
                                         <td className="alignR">{elem.research.toFixed(2)}</td>
-                                        <td className="alignR">{elem.discount}%</td>
-                                        <td className="alignR">{elem.discountValue ? `-` : ''}{elem.discountValue.toFixed(2)}</td>
-                                        <td className="alignR"><strong>{elem.cost.toFixed(2)}</strong></td>
+                                        <td colSpan={extracost.insurance ? 1 : 2} className="alignR totalColumn">{(elem.total).toFixed(2)}</td>
+                                        { extracost.insurance &&  <td className="alignR"></td> }
+                                        <td className="alignR"></td>
+                                        <td className="alignR"></td>
                                     </tr>;
                                     return Row;
                                 })
@@ -215,36 +244,36 @@ const ExportInvoice = props => {
                         </tbody>
                         <tbody className="totalBody">
                             <tr>
-                                <td colSpan={8} className="alignR"><em>Total Personnel Cost</em></td>
+                                <td colSpan={9} className="alignR"><em>Total Personnel Cost</em></td>
                                 <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.personnel)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={8} className="alignR"><em>Travels</em></td>
+                                <td colSpan={9} className="alignR"><em>Travels</em></td>
                                 <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.travel)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={8} className="alignR"><em>Research Incentives</em></td>
+                                <td colSpan={9} className="alignR"><em>Research Incentives</em></td>
                                 <td className="alignR">{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.research)}</td>
                             </tr>
                             <tr>
-                                <td colSpan={8} className="alignR"><em>Discount</em></td>
+                                <td colSpan={9} className="alignR"><em>Discount</em></td>
                                 <td className="alignR">-{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.discount)}</td>
                             </tr>
                             {
                                 extracost?.insurance && <>
                                     <tr>
-                                        <td colSpan={8} className="alignR"><strong>TOTAL</strong></td>
+                                        <td colSpan={9} className="alignR"><strong>TOTAL</strong></td>
                                         <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost)}</strong></td>
                                     </tr>
                                     <tr>
-                                        <td colSpan={8} className="alignR"><em>Payment Insurance (5% of total)</em></td>
-                                        <td className="alignR"><em>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}</em></td>
+                                        <td colSpan={9} className="alignR"><em>Payment Insurance (5% of total)</em></td>
+                                        <td className="alignR"><em>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.insurance)}</em></td>
                                     </tr>
                                 </>
                             }
                             <tr className="totalRow">
-                                <td colSpan={8} className="alignR"><strong>NET TOTAL</strong></td>
-                                <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}</strong></td>
+                                <td colSpan={9} className="alignR"><strong>NET TOTAL</strong></td>
+                                <td className="alignR"><strong>{new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format((extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost))}</strong></td>
                             </tr>
                         </tbody>
                         {
@@ -252,8 +281,8 @@ const ExportInvoice = props => {
                             Travels \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.travel)}
                             Research Incentives \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.research)}
                             Discount \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.discount)}
-                            Payment Insurance (5% of total) \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}
-                            Total \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost)}`)
+                            ${ extracost.insurance ? `Payment Insurance (5% of total) \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format(total.cost * 5 / 100)}` : `` }
+                            Total \t ${new Intl.NumberFormat('en-US', { style: 'currency', currency: shortCurrency }).format((extracost?.insurance ? total.cost + (total.cost * 5 / 100) : total.cost))}`)
                         }
                     </table></Table> : <Box pad={['x4']}><Empty description={<p><strong>No Data</strong><br />Please provide complete information for invoice fields</p>} /></Box>
                     }

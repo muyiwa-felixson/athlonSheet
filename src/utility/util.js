@@ -70,15 +70,15 @@ export const projectTypes = [
 ];
 
 export const travelTypes = [
-  { label: 'None added', value: 'none' },
-  { label: 'Per Sprint', value: 'sprint' },
-  { label: 'Lump Sum', value: 'lumpsum' },
+  { label: 'No', value: 'none' },
+  { label: 'Yes', value: 'sprint' },
+  // { label: 'Lump Sum', value: 'lumpsum' },
 ];
 
 export const phaseTravelTypes = [
-  { label: 'None added', value: 'none' },
-  { label: 'Per Phase', value: 'sprint' },
-  { label: 'Lump Sum', value: 'lumpsum' },
+  { label: 'No', value: 'none' },
+  { label: 'Yes', value: 'sprint' },
+  // { label: 'Lump Sum', value: 'lumpsum' },
 ];
 
 export const billCycleTypes = [
