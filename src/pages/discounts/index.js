@@ -12,7 +12,7 @@ export const ManageDiscounts = props => {
     const UserData = React.useContext(UserContext);
     const phases = UserData.invoice?.get.phases ? UserData.invoice?.get.phases : [];
     const [extracost, setExtracost] = useState(UserData.invoice?.get.extracost ? UserData.invoice.get.extracost : {
-        discount: false,
+        discount: true,
         discountValue: 5,
         travel: 'sprint',
         travelCost: 0,
