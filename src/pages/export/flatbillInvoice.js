@@ -51,7 +51,7 @@ const ExportFlatBillInvoice = props => {
             PhaseFYP.push({date: elem.date, total: parseFloat(elem.total)});  
     });
     
-    total.discount = extracost.discount !== 'false' ? (extracost.discount === 'team' ? total.personnel  : total.cost) * extracost.discountValue/100 : 0;
+    total.discount = extracost.discount && extracost.discount !== 'false' ? (extracost.discount === 'team' ? total.personnel  : total.cost) * extracost.discountValue/100 : 0;
     let discountRemain  = total.discount;
     total.cost = total.cost  - total.discount;
 

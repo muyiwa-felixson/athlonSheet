@@ -129,7 +129,7 @@ const ExportInvoice = props => {
         }    
     }));
     
-    total.discount = extracost.discount !== 'false' ? (extracost.discount === 'team' ? total.personnel  : total.cost) * extracost.discountValue/100 : 0;
+    total.discount = extracost.discount && extracost.discount !== 'false' ? (extracost.discount === 'team' ? total.personnel  : total.cost) * extracost.discountValue/100 : 0;
     let discountRemain  = total.discount;
     total.cost = total.cost  - total.discount;
     GroupFYP.reverse().map((elem)=>{   
